@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Growth Calculator</title>
+    <style>
+        .error-messages p {
+            color: red;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            max-width: 600px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            padding-right: 10px;
+        }
+        form {
+            margin: auto;
+            width: 100%;
+            max-width: 600px;
+        }
+        .plot-container img {
+            max-width: 100%; /* limit image to the width of its container */
+            height: auto; /* maintain aspect ratio */
+            display: block; /* prevent inline display */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Investment Growth Calculator</h1>
+
+        {% if error_messages %}
+            <div class="error-messages">
+                {% for message in error_messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form action="/" method="post">
+            <div class="form-group">
+                <label for="starting_amount">Starting Amount ($):</label>
+                <input type="text" name="starting_amount" id="starting_amount" value="{{ form_data.get('starting_amount', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="interest_rates">Gain Rates (% per trade, multiple simulations separated by commas):</label>
+                <input type="text" name="interest_rates" id="interest_rates" value="{{ form_data.get('interest_rates', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="loss_percent">Loss % (every X trades):</label>
+                <input type="text" name="loss_percent" id="loss_percent" value="{{ form_data.get('loss_percent', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="loss_frequency">Loss Frequency (trades):</label>
+                <input type="text" name="loss_frequency" id="loss_frequency" value="{{ form_data.get('loss_frequency', '') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="days">Number of Trades:</label>
+                <input type="text" name="days" id="days" value="{{ form_data.get('days', '') }}" required>
+            </div>
+
+            <input type="submit" value="Calculate Growth">
+
+            <div class="plot-container">
+                {% if plot_url %}
+                    <img src="data:image/png;base64,{{ plot_url }}" alt="Investment Growth Plot">
+                {% endif %}
+            </div>
+
+
+        </form>
+
+    </div>
+</body>
+</html>
