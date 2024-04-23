@@ -9,8 +9,8 @@ def create_app():
     # Configuration and blueprint registration goes here
 
     app.register_blueprint(home)
-    app.register_blueprint(investment_app)
     app.register_blueprint(click_button)
+    app.register_blueprint(investment_app)
     app.register_blueprint(break_button)  # Register the break_button Blueprint
 
     return app

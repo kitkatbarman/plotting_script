@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request
 from ..utils.plotting import plot_investment_growth  # Adjust the import path accordingly
 
-investment_app = Blueprint('investment_app', __name__, url_prefix='/investment-app')
+investment_app = Blueprint('investment_app', __name__, url_prefix='/')
 
-@investment_app.route('/', methods=['GET', 'POST'])
+@investment_app.route('/investment-app/', methods=['GET', 'POST'])
 def investment_app_route():
     plot_url = None
     form_data = {'starting_amount': '', 'loss_percent': '', 'loss_frequency': '', 'interest_rates': '', 'days': ''}
