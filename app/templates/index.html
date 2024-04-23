@@ -37,6 +37,7 @@
 </head>
 <body>
     <div class="container">
+        <a href="/" style="text-align: left; display: block;">Home</a>
         <h1>Investment Growth Calculator</h1>
 
         {% if error_messages %}
@@ -47,7 +48,7 @@
             </div>
         {% endif %}
 
-        <form action="/" method="post">
+        <form action="/investment-app/" method="post">
             <div class="form-group">
                 <label for="starting_amount">Starting Amount ($):</label>
                 <input type="text" name="starting_amount" id="starting_amount" value="{{ form_data.get('starting_amount', '') }}" required>
