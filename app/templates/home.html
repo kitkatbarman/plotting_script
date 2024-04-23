@@ -7,8 +7,8 @@
 </head>
 <body>
     <h1>Useles... erm, Useful webapps</h1>
-    <p><a href="https://usefulplots.com/investment-app/">Investment Growth Calculator</a></p>
-    <p><a href="https://usefulplots.com/click-a-button/">Click a Button</a></p>
-    <p><a href="https://usefulplots.com/break-the-button/">Break the Button</a></p>
+    <p><a href="{{ url_for('investment_app.investment_app_route', _external=True) }}">Investment Growth Calculator</a></p>
+    <p><a href="{{ url_for('click_button.click_button_page', _external=True) }}">Click a Button</a></p>
+    <p><a href="{{ url_for('break_button.break_button_page', _external=True) }}">Break the Button</a></p>
 </body>
 </html>
