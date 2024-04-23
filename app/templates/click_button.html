@@ -1,5 +1,3 @@
-<!-- click_button.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +14,13 @@
             height: 100px; /* Set the height */
             font-size: 24px; /* Adjust the font size */
         }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -24,9 +29,47 @@
     <!-- Random button -->
     <button id="randomButton" onclick="moveButton()">Click Me!</button>
 
+    <!-- Info section -->
+    <div id="info">
+        <p>Time left: <span id="timer">10</span> seconds</p>
+        <p>Clicks: <span id="clicks">0</span></p>
+        <p>Previous Record: <span id="previousRecord">0</span></p>
+    </div>
+
     <script>
-        // JavaScript function to move the button randomly
+        var timer = 10; // Initial timer value in seconds
+        var clicks = 0; // Initialize click counter
+        var previousRecord = 0; // Initialize previous record
+        var intervalId; // Variable to hold the interval ID
+    
+        // Function to update the countdown timer
+        function updateTimer() {
+            timer--;
+            document.getElementById('timer').textContent = timer;
+            if (timer <= 0) {
+                clearInterval(intervalId); // Stop the countdown when timer reaches 0
+                document.getElementById('randomButton').disabled = true; // Disable the button
+                document.getElementById('randomButton').style.display = 'none'; // Hide the button
+                // Ensure only one try again button is added
+                if (!document.getElementById('tryAgainButton')) {
+                    var tryAgainButton = document.createElement('button');
+                    tryAgainButton.textContent = 'Try Again';
+                    tryAgainButton.id = 'tryAgainButton'; // Add an ID to the try again button
+                    tryAgainButton.onclick = resetGame;
+                    document.body.appendChild(tryAgainButton);
+                }
+                // Update previous record if needed
+                if (clicks > previousRecord) {
+                    previousRecord = clicks;
+                    document.getElementById('previousRecord').textContent = previousRecord;
+                }
+            }
+        }
+    
+        // Function to move the button randomly
         function moveButton() {
+            clicks++;
+            document.getElementById('clicks').textContent = clicks;
             var button = document.getElementById('randomButton');
             var maxX = window.innerWidth - button.offsetWidth;
             var maxY = window.innerHeight - button.offsetHeight;
@@ -35,6 +78,26 @@
             button.style.left = randomX + 'px';
             button.style.top = randomY + 'px';
         }
+    
+        // Function to reset the game
+        function resetGame() {
+            timer = 10; // Reset the timer
+            clicks = 0; // Reset the click counter
+            document.getElementById('timer').textContent = timer;
+            document.getElementById('clicks').textContent = clicks;
+            document.getElementById('randomButton').disabled = false;
+            document.getElementById('randomButton').style.display = 'block';
+            var tryAgainButton = document.getElementById('tryAgainButton');
+            if (tryAgainButton) {
+                tryAgainButton.remove(); // Remove the try again button correctly
+            }
+            intervalId = setInterval(updateTimer, 1000); // Restart the timer
+            moveButton(); // Reset the position of the random button
+        }
+    
+        // Start the countdown timer
+        intervalId = setInterval(updateTimer, 1000);
     </script>
+    
 </body>
 </html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Break the Button</title>
+    <style>
+        button {
+            background-color: grey;
+            padding: 10px 20px;
+        }
+        #button-container {
+            position: relative;
+            display: inline-block;
+        }
+        .try-again-button {
+            position: absolute;
+            left: 120%;
+            top: 0;
+        }
+    </style>
+    <script>
+        let buttonPresses = 0;
+        let previousRecord = 0;
+
+        function lightenButton() {
+            buttonPresses++;
+            document.getElementById('press-count').textContent = buttonPresses;
+
+            let button = document.getElementById('break-button');
+
+            // Calculate the probability of breaking
+            let probability = buttonPresses / 10;
+            if (Math.random() < probability) {
+                button.disabled = true;
+                let tryAgainButton = document.createElement('button');
+                tryAgainButton.textContent = 'Try Again?';
+                tryAgainButton.className = 'try-again-button';
+                tryAgainButton.onclick = resetButton;
+                let parent = button.parentNode;
+                parent.appendChild(tryAgainButton);
+
+                // Update previous record if needed
+                if (buttonPresses > previousRecord) {
+                    previousRecord = buttonPresses;
+                    document.getElementById('previous-record').textContent = previousRecord;
+                }
+            } else {
+                // Lighten the button color
+                let currentColor = button.style.backgroundColor;
+                let newColor = lightenColor(currentColor);
+                button.style.backgroundColor = newColor;
+            }
+        }
+
+        function lightenColor(color) {
+            // Implement your code to lighten the color here
+            // This is just a placeholder
+            return 'lightgrey';
+        }
+
+        function resetButton() {
+            buttonPresses = 0;
+            document.getElementById('press-count').textContent = buttonPresses;
+            let button = document.createElement('button');
+            button.textContent = 'Break Me';
+            button.id = 'break-button';
+            button.onclick = lightenButton;
+            let parent = document.getElementById('button-container');
+            parent.replaceChild(button, document.getElementById('break-button'));
+            let tryAgainButton = document.getElementsByClassName('try-again-button')[0];
+            tryAgainButton.remove();
+        }
+    </script>
+</head>
+<body>
+    <h1>Break the Button</h1>
+    <p>Number of button presses: <span id="press-count">0</span></p>
+    <p>Previous record without breaking: <span id="previous-record">0</span></p>
+    <div id="button-container">
+        <button id="break-button" onclick="lightenButton()">Break Me</button>
+    </div>
+</body>
+</html>
