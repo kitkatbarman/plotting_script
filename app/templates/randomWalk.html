@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Walk</title>
+    <style>
+        #control-panel {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        .control-button {
+            margin: 0 10px;
+        }
+        .control-label {
+            margin: 0 10px;
+        }
+        #canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 100px); /* Adjust based on the height of control panel */
+        }
+        canvas {
+            border: 1px solid black; /* Optional: to visualize the canvas border */
+        }
+    </style>
+</head>
+<body>
+    <div id="control-panel">
+        <button id="start-button" class="control-button">Start</button>
+        <button id="pause-button" class="control-button">Pause</button>
+        <button id="stop-button" class="control-button">Stop</button>
+        <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
+        <!-- <label class="control-label">
+            Shape:
+            <select id="shape-selector">
+                <option value="rectangle">Rectangle</option>
+                <option value="circle">Circle</option>
+                <option value="triangle">Triangle</option>
+            </select>
+        </label>
+        <label class="control-label"><input type="checkbox" id="fractal-walk"> Fractal Walk</label>
+        <label class="control-label">Fractal Steps: <input type="range" id="fractal-steps" min="10" max="200" value="30"></label>
+        <label class="control-label">Randomness: <input type="range" id="randomness-slider" min="0" max="100" value="0"></label> -->
+        <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
+        <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
+    </div>
+    <div id="canvas-container">
+        <!-- The canvas will be inserted here by p5.js -->
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="{{ url_for('static', filename='js/randomWalker.js') }}"></script>
+</body>
+</html>
