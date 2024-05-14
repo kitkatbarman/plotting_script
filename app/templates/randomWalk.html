@@ -33,7 +33,7 @@
         <button id="pause-button" class="control-button">Pause</button>
         <button id="stop-button" class="control-button">Stop</button>
         <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
-        <!-- <label class="control-label">
+        <label class="control-label">
             Shape:
             <select id="shape-selector">
                 <option value="rectangle">Rectangle</option>
@@ -43,13 +43,14 @@
         </label>
         <label class="control-label"><input type="checkbox" id="fractal-walk"> Fractal Walk</label>
         <label class="control-label">Fractal Steps: <input type="range" id="fractal-steps" min="10" max="200" value="30"></label>
-        <label class="control-label">Randomness: <input type="range" id="randomness-slider" min="0" max="100" value="0"></label> -->
+        <label class="control-label">Randomness: <input type="range" id="randomness-slider" min="0" max="100" value="0"></label>
         <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
         <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
     </div>
     <div id="canvas-container">
         <!-- The canvas will be inserted here by p5.js -->
     </div>
+    <p>Static URL: {{ url_for('static', filename='js/randomWalker.js') }}</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="{{ url_for('static', filename='js/randomWalker.js') }}"></script>
 </body>
