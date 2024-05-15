@@ -15,6 +15,11 @@ function setup() {
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y });
     frameRate(10); // Start with a default speed
     console.log("Canvas setup completed."); // Debugging step
+
+    // Prevent default touch actions to enable custom pinch and pan handling
+    canvas.elt.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
+    canvas.elt.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+    canvas.elt.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
 }
 
 function draw() {
