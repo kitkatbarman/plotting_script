@@ -51,22 +51,23 @@
 <body>
     <div id="control-panel">
         <button id="start-button" class="control-button">Start</button>
-        <button id="pause-button" class="control-button">Pause</button>
         <button id="stop-button" class="control-button">Stop</button>
         <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
-        <!-- label class="control-label">
+        <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
+        <!-- Commented out buttons and controls -->
+        <!-- <button id="pause-button" class="control-button">Pause</button> -->
+        <!-- <label class="control-label">
             Shape:
             <select id="shape-selector">
                 <option value="rectangle">Rectangle</option>
                 <option value="circle">Circle</option>
                 <option value="triangle">Triangle</option>
             </select>
-        </label>
-        <label class="control-label"><input type="checkbox" id="fractal-walk"> Fractal Walk</label>
-        <label class="control-label">Fractal Steps: <input type="range" id="fractal-steps" min="10" max="200" value="30"></label>
-        <label class="control-label">Randomness: <input type="range" id="randomness-slider" min="0" max="100" value="0"></label -->
-        <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
-        <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
+        </label> -->
+        <!-- <label class="control-label"><input type="checkbox" id="fractal-walk"> Fractal Walk</label> -->
+        <!-- <label class="control-label">Fractal Steps: <input type="range" id="fractal-steps" min="10" max="200" value="30"></label> -->
+        <!-- <label class="control-label">Randomness: <input type="range" id="randomness-slider" min="0" max="100" value="0"></label> -->
+        <!-- <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label> -->
     </div>
     <div id="canvas-container">
         <!-- The canvas will be inserted here by p5.js -->
@@ -74,5 +75,88 @@
     <p>Static URL: {{ url_for('static', filename='js/randomWalker.js') }}</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="{{ url_for('static', filename='js/randomWalker.js') }}"></script>
+    <script>
+        let pathPoints = [];
+        let currentLocation = { x: 400, y: 400 };
+        let scaleFactor = 1.0;
+        let translateX = 0;
+        let translateY = 0;
+        let initialDistance = 0;
+        let initialScale = 1.0;
+        let isPinching = false;
+        let lastTouches = [];
+
+        function setup() {
+            createCanvas(800, 800).parent('canvas-container');
+            pathPoints.push({ x: currentLocation.x, y: currentLocation.y });
+            frameRate(10); // Start with a default speed
+        }
+
+        function draw() {
+            background(255);
+            translate(translateX, translateY);
+            scale(scaleFactor);
+
+            stroke(0);
+            strokeWeight(2);
+
+            for (let i = 1; i < pathPoints.length; i++) {
+                line(pathPoints[i - 1].x, pathPoints[i - 1].y, pathPoints[i].x, pathPoints[i].y);
+            }
+
+            // Perform any other drawing or updates here...
+        }
+
+        function touchStarted() {
+            if (touches.length === 2) {
+                isPinching = true;
+                initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+                initialScale = scaleFactor;
+            } else {
+                isPinching = false;
+                lastTouches = [...touches];
+            }
+        }
+
+        function touchMoved() {
+            if (isPinching && touches.length === 2) {
+                let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+                scaleFactor = initialScale * (currentDistance / initialDistance);
+            } else if (!isPinching && touches.length === 1 && lastTouches.length === 1) {
+                translateX += touches[0].x - lastTouches[0].x;
+                translateY += touches[0].y - lastTouches[0].y;
+                lastTouches = [...touches];
+            }
+        }
+
+        function touchEnded() {
+            if (touches.length < 2) {
+                isPinching = false;
+            }
+            lastTouches = [...touches];
+        }
+
+        document.getElementById('start-button').addEventListener('click', () => {
+            loop();
+        });
+
+        document.getElementById('stop-button').addEventListener('click', () => {
+            noLoop();
+            pathPoints = [{ x: 400, y: 400 }];
+            currentLocation = { x: 400, y: 400 };
+            translateX = 0;
+            translateY = 0;
+            redraw();
+        });
+
+        document.getElementById('follow-walk').addEventListener('change', (e) => {
+            followWalk = e.target.checked;
+        });
+
+        document.getElementById('speed-slider').addEventListener('input', (e) => {
+            let speed = e.target.value;
+            frameRate(map(speed, 0, 100, 1, 60));
+        });
+    </script>
 </body>
 </html>
