@@ -129,7 +129,7 @@ window.onload = function() {
             timer = false;
             noLoop();
             pathPoints = [{ x: 400, y: 400 }];
-            currentLocation = [{ x: 400, y: 400 }];
+            currentLocation = { x: 400, y: 400 };
             translateX = 0;
             translateY = 0;
             redraw();
