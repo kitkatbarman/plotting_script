@@ -103,7 +103,20 @@ function saveDrawing() {
         }
     }
 
-    save(tempCanvas, 'random_walk.png');
+    tempCanvas.loadPixels();
+    let pixelData = tempCanvas.pixels;
+    let nonEmptyPixels = 0;
+    for (let i = 0; i < pixelData.length; i += 4) {
+        if (pixelData[i] !== 255 || pixelData[i + 1] !== 255 || pixelData[i + 2] !== 255) {
+            nonEmptyPixels++;
+        }
+    }
+
+    if (nonEmptyPixels > 0) {
+        save(tempCanvas, 'random_walk.png');
+    } else {
+        alert("The canvas is empty or too large to save. Please try again with a smaller drawing.");
+    }
 }
 
 function moveRandomly() {
@@ -197,7 +210,7 @@ function zoomAtMousePosition(zoomAmount, x, y) {
 
     // Update the zoom slider to reflect the current canvasScale
     let zoomSlider = document.getElementById('zoom-slider');
-    zoomSlider.value = map(canvasScale, 0.005, 0.6, 0, 100);
+    zoomSlider.value = map(canvasScale, 0.01, 0.8, 0, 100);
 }
 
 function mousePressed() {
