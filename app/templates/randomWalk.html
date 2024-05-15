@@ -43,6 +43,7 @@
             justify-content: center;
             align-items: center;
             flex-grow: 1;
+            position: relative;
         }
 
         canvas {
@@ -69,6 +70,16 @@
                 flex-direction: column;
                 align-items: center;
             }
+
+            #canvas-container {
+                height: 100vw; /* Ensure square aspect ratio on mobile */
+                width: 100vw; /* Ensure square aspect ratio on mobile */
+            }
+
+            canvas {
+                width: 100%; /* Fill the container */
+                height: 100%; /* Fill the container */
+            }
         }
     </style>
 </head>
@@ -90,10 +101,10 @@
             <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
         </div>
     </div>
+    <p>Click or finger drag, and mouse wheel or pinch to zoom!</p>
     <div id="canvas-container">
         <!-- The canvas will be inserted here by p5.js -->
     </div>
-    <p>Static URL: {{ url_for('static', filename='js/randomWalker.js') }}</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="{{ url_for('static', filename='js/randomWalker.js') }}"></script>
     <script>
@@ -105,6 +116,8 @@
             document.getElementById('mobile-message').style.display = 'block';
             document.getElementById('control-panel').style.flexDirection = 'column';
             document.getElementById('control-panel').style.alignItems = 'center';
+            document.getElementById('canvas-container').style.height = '100vw';
+            document.getElementById('canvas-container').style.width = '100vw';
         }
     </script>
 </body>
