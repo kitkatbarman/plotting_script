@@ -74,8 +74,9 @@ class Game {
         const touchX = touch.clientX - rect.left;
         const touchY = touch.clientY - rect.top;
 
-        this.x = touchX * (600 / rect.width) - this.diameter / 2;
-        this.y = touchY * (600 / rect.height) - this.diameter / 2;
+        // Correct the touch coordinates for high DPI screens
+        this.x = touchX * (this.canvas.width / rect.width) - this.diameter / 2;
+        this.y = touchY * (this.canvas.height / rect.height) - this.diameter / 2;
     }
 
     resetTouch() {
@@ -167,7 +168,7 @@ class Game {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, 600, 600); // Clear the canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas
         this.ctx.fillStyle = 'blue';
         this.ctx.beginPath();
         this.ctx.ellipse(this.x, this.y, this.diameter / 2, this.diameter / 2, 0, 0, 2 * Math.PI);
