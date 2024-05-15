@@ -68,7 +68,7 @@ class Game {
     }
 
     handleTouch(e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default touch actions
         const touch = e.touches[0];
         const rect = this.canvas.getBoundingClientRect();
         const touchX = touch.clientX - rect.left;
