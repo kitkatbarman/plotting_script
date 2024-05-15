@@ -3,12 +3,13 @@ let currentLocation = { x: 400, y: 400 };
 let scaleFactor = 1.0;
 let translateX = 0;
 let translateY = 0;
-let timer = false; // Initialize timer variable
+let timer = false;
 let isPinching = false;
 let initialDistance = 0;
 let initialScale = 1.0;
 let lastTouches = [];
 
+// Setup p5.js canvas
 function setup() {
     let canvas = createCanvas(800, 800);
     canvas.parent('canvas-container');
@@ -103,37 +104,54 @@ function adjustView(centerX, centerY, newScale) {
     translateY = (translateY - centerY) * zoomFactor + centerY;
 }
 
+// Setup event listeners for buttons after DOM is loaded
 document.addEventListener('DOMContentLoaded', (event) => {
-    document.getElementById('start-button').addEventListener('click', () => {
-        timer = true;
-        loop();
-        console.log("Start button clicked."); // Debugging step
-    });
+    const startButton = document.getElementById('start-button');
+    const pauseButton = document.getElementById('pause-button');
+    const stopButton = document.getElementById('stop-button');
+    const followWalkCheckbox = document.getElementById('follow-walk');
+    const speedSlider = document.getElementById('speed-slider');
 
-    document.getElementById('pause-button').addEventListener('click', () => {
-        noLoop();
-        console.log("Pause button clicked."); // Debugging step
-    });
+    if (startButton) {
+        startButton.addEventListener('click', () => {
+            timer = true;
+            loop();
+            console.log("Start button clicked."); // Debugging step
+        });
+    }
 
-    document.getElementById('stop-button').addEventListener('click', () => {
-        timer = false;
-        noLoop();
-        pathPoints = [{ x: 400, y: 400 }];
-        currentLocation = { x: 400, y: 400 };
-        translateX = 0;
-        translateY = 0;
-        redraw();
-        console.log("Stop button clicked."); // Debugging step
-    });
+    if (pauseButton) {
+        pauseButton.addEventListener('click', () => {
+            noLoop();
+            console.log("Pause button clicked."); // Debugging step
+        });
+    }
 
-    document.getElementById('follow-walk').addEventListener('change', (e) => {
-        followWalk = e.target.checked;
-        console.log("Follow Walk changed to: " + followWalk); // Debugging step
-    });
+    if (stopButton) {
+        stopButton.addEventListener('click', () => {
+            timer = false;
+            noLoop();
+            pathPoints = [{ x: 400, y: 400 }];
+            currentLocation = { x: 400, y: 400 };
+            translateX = 0;
+            translateY = 0;
+            redraw();
+            console.log("Stop button clicked."); // Debugging step
+        });
+    }
 
-    document.getElementById('speed-slider').addEventListener('input', (e) => {
-        let speed = e.target.value;
-        frameRate(map(speed, 0, 100, 1, 60));
-        console.log("Speed changed to: " + speed); // Debugging step
-    });
+    if (followWalkCheckbox) {
+        followWalkCheckbox.addEventListener('change', (e) => {
+            followWalk = e.target.checked;
+            console.log("Follow Walk changed to: " + followWalk); // Debugging step
+        });
+    }
+
+    if (speedSlider) {
+        speedSlider.addEventListener('input', (e) => {
+            let speed = e.target.value;
+            frameRate(map(speed, 0, 100, 1, 60));
+            console.log("Speed changed to: " + speed); // Debugging step
+        });
+    }
 });
