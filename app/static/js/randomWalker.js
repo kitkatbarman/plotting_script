@@ -24,6 +24,8 @@ function setup() {
 
     // Add mouse wheel event for desktop zooming
     canvas.elt.addEventListener('wheel', handleMouseWheel, { passive: false });
+
+    setupEventListeners();
 }
 
 function draw() {
@@ -103,7 +105,7 @@ function adjustView(centerX, centerY, newScale) {
     translateY = (translateY - centerY) * zoomFactor + centerY;
 }
 
-window.onload = function() {
+function setupEventListeners() {
     document.getElementById('start-button').addEventListener('click', () => {
         timer = true;
         loop();
@@ -136,4 +138,4 @@ window.onload = function() {
         frameRate(map(speed, 0, 100, 1, 60));
         console.log("Speed changed to: " + speed); // Debugging step
     });
-};
+}
