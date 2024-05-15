@@ -8,42 +8,30 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
         }
 
         #control-panel {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            padding: 10px;
-            background-color: #f8f8f8;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        .control-group {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
+            margin: 20px;
         }
 
         .control-button {
-            margin: 5px;
+            margin: 10px;
+            flex: 1 1 100px; /* Flexible and minimum width */
         }
 
         .control-label {
-            margin: 5px;
+            margin: 10px;
+            flex: 1 1 100px; /* Flexible and minimum width */
         }
 
         #canvas-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-grow: 1;
-            position: relative;
+            height: calc(100vh - 100px); /* Adjust based on the height of control panel */
         }
 
         canvas {
@@ -52,73 +40,27 @@
             height: auto;
         }
 
-        #mobile-message {
-            text-align: center;
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            display: none; /* Initially hidden */
-        }
-
         @media (max-width: 600px) {
             #control-panel {
                 flex-direction: column;
                 align-items: center;
             }
-
-            .control-group {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            #canvas-container {
-                height: 100vw; /* Ensure square aspect ratio on mobile */
-                width: 100vw; /* Ensure square aspect ratio on mobile */
-            }
-
-            canvas {
-                width: 100%; /* Fill the container */
-                height: 100%; /* Fill the container */
-            }
         }
     </style>
 </head>
 <body>
-    <div id="mobile-message">Mobile</div>
     <div id="control-panel">
-        <div class="control-group">
-            <button id="start-button" class="control-button">Start</button>
-            <button id="pause-button" class="control-button">Pause</button>
-            <button id="stop-button" class="control-button">Stop</button>
-        </div>
-        <div class="control-group">
-            <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
-        </div>
-        <div class="control-group">
-            <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
-        </div>
-        <div class="control-group">
-            <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
-        </div>
+        <button id="start-button" class="control-button">Start</button>
+        <button id="pause-button" class="control-button">Pause</button>
+        <button id="stop-button" class="control-button">Stop</button>
+        <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
+        <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
+        <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
     </div>
     <div id="canvas-container">
         <!-- The canvas will be inserted here by p5.js -->
     </div>
-    <p>version1.0.1</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="{{ url_for('static', filename='js/randomWalker.js') }}"></script>
-    <script>
-        function isMobileDevice() {
-            return /Mobi|Android/i.test(navigator.userAgent);
-        }
-
-        if (isMobileDevice()) {
-            document.getElementById('mobile-message').style.display = 'block';
-            document.getElementById('control-panel').style.flexDirection = 'column';
-            document.getElementById('control-panel').style.alignItems = 'center';
-            document.getElementById('canvas-container').style.height = '100vw';
-            document.getElementById('canvas-container').style.width = '100vw';
-        }
-    </script>
+    <script src="{{ url_for('static', filename='js/randomWalker.js') }}?v=1.1"></script>
 </body>
 </html>
