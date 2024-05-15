@@ -1,6 +1,6 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 0.6; // Renamed from 'scale' to 'canvasScale'
+let canvasScale = 0.5; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
 let baseStepSize = 50;
@@ -197,7 +197,7 @@ function zoomAtMousePosition(zoomAmount, x, y) {
 
     // Update the zoom slider to reflect the current canvasScale
     let zoomSlider = document.getElementById('zoom-slider');
-    zoomSlider.value = map(canvasScale, 0.05, 0.8, 0, 100);
+    zoomSlider.value = map(canvasScale, 0.005, 0.6, 0, 100);
 }
 
 function mousePressed() {
