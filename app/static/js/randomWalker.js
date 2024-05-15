@@ -16,7 +16,6 @@ function setup() {
     canvas.elt.style.touchAction = 'none'; // Disable default touch actions
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y });
     frameRate(10); // Start with a default speed
-    console.log("Canvas setup completed."); // Debugging step
 
     // Prevent default touch actions to enable custom pinch and pan handling
     canvas.elt.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -42,8 +41,6 @@ function draw() {
     if (timer) {
         moveRandomly(); // Assuming moveRandomly is defined
     }
-
-    console.log("Drawing frame."); // Debugging step
 }
 
 function handleTouchStart(e) {
@@ -105,7 +102,7 @@ function adjustView(centerX, centerY, newScale) {
 }
 
 // Setup event listeners for buttons after DOM is loaded
-document.addEventListener('DOMContentLoaded', (event) => {
+window.onload = function() {
     const startButton = document.getElementById('start-button');
     const pauseButton = document.getElementById('pause-button');
     const stopButton = document.getElementById('stop-button');
@@ -116,14 +113,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
         startButton.addEventListener('click', () => {
             timer = true;
             loop();
-            console.log("Start button clicked."); // Debugging step
+            console.log("Start button clicked.");
         });
     }
 
     if (pauseButton) {
         pauseButton.addEventListener('click', () => {
             noLoop();
-            console.log("Pause button clicked."); // Debugging step
+            console.log("Pause button clicked.");
         });
     }
 
@@ -136,14 +133,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
             translateX = 0;
             translateY = 0;
             redraw();
-            console.log("Stop button clicked."); // Debugging step
+            console.log("Stop button clicked.");
         });
     }
 
     if (followWalkCheckbox) {
         followWalkCheckbox.addEventListener('change', (e) => {
             followWalk = e.target.checked;
-            console.log("Follow Walk changed to: " + followWalk); // Debugging step
+            console.log("Follow Walk changed to: " + followWalk);
         });
     }
 
@@ -151,7 +148,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         speedSlider.addEventListener('input', (e) => {
             let speed = e.target.value;
             frameRate(map(speed, 0, 100, 1, 60));
-            console.log("Speed changed to: " + speed); // Debugging step
+            console.log("Speed changed to: " + speed);
         });
     }
-});
+};
