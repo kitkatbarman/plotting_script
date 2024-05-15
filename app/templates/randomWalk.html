@@ -18,12 +18,12 @@
         }
 
         .control-button {
-            margin: 10px;
+            margin: 5px;
             flex: 1 1 100px; /* Flexible and minimum width */
         }
 
         .control-label {
-            margin: 10px;
+            margin: 5px;
             flex: 1 1 100px; /* Flexible and minimum width */
         }
 
@@ -31,7 +31,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 100px); /* Adjust based on the height of control panel */
+            height: calc(100vh - 200px); /* Adjust based on the height of control panel */
         }
 
         canvas {
@@ -44,6 +44,10 @@
             #control-panel {
                 flex-direction: column;
                 align-items: center;
+            }
+
+            #canvas-container {
+                height: calc(100vh - 300px); /* Adjust based on the height of control panel */
             }
         }
 
@@ -59,12 +63,20 @@
 <body>
     <div id="mobile-message">Mobile</div>
     <div id="control-panel">
-        <button id="start-button" class="control-button">Start</button>
-        <button id="pause-button" class="control-button">Pause</button>
-        <button id="stop-button" class="control-button">Stop</button>
-        <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
-        <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
-        <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
+        <div>
+            <button id="start-button" class="control-button">Start</button>
+            <button id="pause-button" class="control-button">Pause</button>
+            <button id="stop-button" class="control-button">Stop</button>
+        </div>
+        <div>
+            <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
+        </div>
+        <div>
+            <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
+        </div>
+        <div>
+            <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
+        </div>
     </div>
     <div id="canvas-container">
         <!-- The canvas will be inserted here by p5.js -->
@@ -79,6 +91,8 @@
 
         if (isMobileDevice()) {
             document.getElementById('mobile-message').style.display = 'block';
+            document.getElementById('control-panel').style.flexDirection = 'column';
+            document.getElementById('control-panel').style.alignItems = 'center';
         }
     </script>
 </body>

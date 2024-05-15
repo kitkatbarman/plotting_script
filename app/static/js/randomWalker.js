@@ -4,6 +4,10 @@ let scaleFactor = 1.0;
 let translateX = 0;
 let translateY = 0;
 let timer = false; // Initialize timer variable
+let isPinching = false;
+let initialDistance = 0;
+let initialScale = 1.0;
+let lastTouches = [];
 
 function setup() {
     let canvas = createCanvas(800, 800);
