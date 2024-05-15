@@ -110,27 +110,36 @@ function saveDrawing() {
     }
 
     // Check if the canvas size exceeds the limit
-    if (width + 2 * marginX > 16384 || height + 2 * marginY > 16384) {
-        alert("The image size is too large to save.");
-        return;
+    const MAX_SIZE = 16384; // Common limit for many browsers
+    if (width + 2 * marginX > MAX_SIZE || height + 2 * marginY > MAX_SIZE) {
+        let scaleFactor = Math.min(MAX_SIZE / (width + 2 * marginX), MAX_SIZE / (height + 2 * marginY));
+        width *= scaleFactor;
+        height *= scaleFactor;
+        marginX *= scaleFactor;
+        marginY *= scaleFactor;
+
+        let scaledCanvas = createGraphics(width + 2 * marginX, height + 2 * marginY);
+        scaledCanvas.translate(marginX - minX * scaleFactor, marginY - minY * scaleFactor);
+        scaledCanvas.background(255);
+        scaledCanvas.scale(scaleFactor);
+
+        for (let i = 1; i < pathPoints.length; i++) {
+            let prevPoint = pathPoints[i - 1];
+            let currPoint = pathPoints[i];
+
+            if (isAdjacent(prevPoint, currPoint)) {
+                scaledCanvas.stroke(0);
+                scaledCanvas.strokeWeight(lineThickness * scaleFactor);
+                scaledCanvas.line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
+            }
+        }
+
+        save(scaledCanvas, 'random_walk.jpg');
+    } else {
+        save(tempCanvas, 'random_walk.jpg');
     }
-
-    // Convert to data URL
-    let dataURL = tempCanvas.canvas.toDataURL('image/jpeg', 1.0); // 1.0 for high quality
-    // Create a link element
-    let link = document.createElement('a');
-    link.href = dataURL;
-    link.download = 'random_walk.jpg';
-
-    // Append the link to the body
-    document.body.appendChild(link);
-
-    // Programmatically click the link to trigger the download
-    link.click();
-
-    // Remove the link from the document
-    document.body.removeChild(link);
 }
+
 
 
 
