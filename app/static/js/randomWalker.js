@@ -17,9 +17,9 @@ function setup() {
     console.log("Canvas setup completed."); // Debugging step
 
     // Prevent default touch actions to enable custom pinch and pan handling
-    canvas.elt.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
-    canvas.elt.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
-    canvas.elt.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+    canvas.elt.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.elt.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.elt.addEventListener('touchend', handleTouchEnd, { passive: false });
 
     // Add mouse wheel event for desktop zooming
     canvas.elt.addEventListener('wheel', handleMouseWheel, { passive: false });
@@ -44,39 +44,40 @@ function draw() {
     console.log("Drawing frame."); // Debugging step
 }
 
-function touchStarted() {
-    if (touches.length === 2) {
+function handleTouchStart(e) {
+    if (e.touches.length === 2) {
         isPinching = true;
-        initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+        initialDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         initialScale = scaleFactor;
     } else {
         isPinching = false;
-        lastTouches = [...touches];
+        lastTouches = [...e.touches];
     }
     return false; // Prevent default
 }
 
-function touchMoved() {
-    if (isPinching && touches.length === 2) {
-        let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+function handleTouchMove(e) {
+    if (isPinching && e.touches.length === 2) {
+        let currentDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         scaleFactor = initialScale * (currentDistance / initialDistance);
+
         // Adjust the translation to zoom in/out around the center point between the touches
-        let midX = (touches[0].x + touches[1].x) / 2;
-        let midY = (touches[0].y + touches[1].y) / 2;
+        let midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        let midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
         adjustView(midX, midY, currentDistance / initialDistance);
-    } else if (!isPinching && touches.length === 1 && lastTouches.length === 1) {
-        translateX += touches[0].x - lastTouches[0].x;
-        translateY += touches[0].y - lastTouches[0].y;
-        lastTouches = [...touches];
+    } else if (!isPinching && e.touches.length === 1 && lastTouches.length === 1) {
+        translateX += e.touches[0].clientX - lastTouches[0].clientX;
+        translateY += e.touches[0].clientY - lastTouches[0].clientY;
+        lastTouches = [...e.touches];
     }
     return false; // Prevent default
 }
 
-function touchEnded() {
-    if (touches.length < 2) {
+function handleTouchEnd(e) {
+    if (e.touches.length < 2) {
         isPinching = false;
     }
-    lastTouches = [...touches];
+    lastTouches = [...e.touches];
     return false; // Prevent default
 }
 
