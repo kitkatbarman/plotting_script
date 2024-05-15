@@ -5,8 +5,8 @@ class Bullet {
         this.y = y;
         this.xSpeed = xSpeed;
         this.ySpeed = ySpeed;
-        this.width = 20;
-        this.height = 20;
+        this.width = 20; // Bullet width
+        this.height = 20; // Bullet height
     }
 
     move() {
@@ -17,13 +17,24 @@ class Bullet {
     draw(ctx) {
         ctx.fillStyle = 'red';
         ctx.beginPath();
-        ctx.ellipse(this.x, this.y, this.width / 2, this.height / 2, 0, 0, 2 * Math.PI);
+        ctx.ellipse(this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, 0, 0, 2 * Math.PI);
         ctx.fill();
     }
 
-    hits(playerX, playerY, playerDiameter) {
-        return this.x < playerX + playerDiameter && this.x + this.width > playerX &&
-            this.y < playerY + playerDiameter && this.y + this.height > playerY;
+    hits(playerX, playerY, playerDiameter, playerColliderDiameter) {
+        const playerRadius = playerColliderDiameter / 2;
+        const playerCenterX = playerX + playerDiameter / 2;
+        const playerCenterY = playerY + playerDiameter / 2;
+
+        const bulletRadius = this.width / 2;
+        const bulletCenterX = this.x + bulletRadius;
+        const bulletCenterY = this.y + bulletRadius;
+
+        const dx = playerCenterX - bulletCenterX;
+        const dy = playerCenterY - bulletCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        return distance < playerRadius + bulletRadius;
     }
 
     isOffScreen() {
@@ -37,7 +48,8 @@ class Game {
         this.ctx = this.canvas.getContext('2d');
         this.x = 300;
         this.y = 300;
-        this.diameter = 50;
+        this.diameter = 50; // Player visual diameter
+        this.colliderDiameter = 30; // Player collider diameter (smaller than visual diameter)
         this.speed = 5;
         this.keyStates = {};
         this.bullets = [];
@@ -49,11 +61,16 @@ class Game {
         this.highScore = 0;
         this.difficultyLevel = 1;
 
+        this.touchCenterX = null;
+        this.touchCenterY = null;
+        this.touchMoveX = null;
+        this.touchMoveY = null;
+
         document.addEventListener('keydown', (e) => this.keyStates[e.code] = true);
         document.addEventListener('keyup', (e) => this.keyStates[e.code] = false);
 
-        this.canvas.addEventListener('touchstart', (e) => this.handleTouch(e));
-        this.canvas.addEventListener('touchmove', (e) => this.handleTouch(e));
+        this.canvas.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+        this.canvas.addEventListener('touchmove', (e) => this.handleTouchMove(e));
         this.canvas.addEventListener('touchend', () => this.resetTouch());
 
         window.addEventListener('resize', () => this.resizeCanvas());
@@ -67,20 +84,28 @@ class Game {
         this.draw();
     }
 
-    handleTouch(e) {
+    handleTouchStart(e) {
         e.preventDefault(); // Prevent default touch actions
         const touch = e.touches[0];
         const rect = this.canvas.getBoundingClientRect();
-        const touchX = touch.clientX - rect.left;
-        const touchY = touch.clientY - rect.top;
+        this.touchCenterX = touch.clientX - rect.left;
+        this.touchCenterY = touch.clientY - rect.top;
+    }
 
-        // Correct the touch coordinates for high DPI screens
-        this.x = touchX * (this.canvas.width / rect.width) - this.diameter / 2;
-        this.y = touchY * (this.canvas.height / rect.height) - this.diameter / 2;
+    handleTouchMove(e) {
+        e.preventDefault(); // Prevent default touch actions
+        const touch = e.touches[0];
+        const rect = this.canvas.getBoundingClientRect();
+        this.touchMoveX = touch.clientX - rect.left;
+        this.touchMoveY = touch.clientY - rect.top;
     }
 
     resetTouch() {
         this.keyStates = {};
+        this.touchCenterX = null;
+        this.touchCenterY = null;
+        this.touchMoveX = null;
+        this.touchMoveY = null;
     }
 
     resizeCanvas() {
@@ -88,6 +113,7 @@ class Game {
         this.canvas.width = 600 * ratio;
         this.canvas.height = 600 * ratio;
         this.ctx.scale(ratio, ratio);
+        this.draw(); // Ensure to redraw after resizing
     }
 
     spawnBullet() {
@@ -123,9 +149,10 @@ class Game {
     update() {
         if (!this.gameOver) {
             this.handlePlayerMovement();
+            this.handleTouchMovement();
             this.bullets.forEach((bullet, index) => {
                 bullet.move();
-                if (bullet.hits(this.x, this.y, this.diameter)) {
+                if (bullet.hits(this.x, this.y, this.diameter, this.colliderDiameter)) {
                     this.gameOver = true;
                     this.handleGameOver();
                 }
@@ -143,6 +170,24 @@ class Game {
         if (this.keyStates['KeyS']) this.y = Math.min(600 - this.diameter, this.y + this.speed);
         if (this.keyStates['KeyA']) this.x = Math.max(0, this.x - this.speed);
         if (this.keyStates['KeyD']) this.x = Math.min(600 - this.diameter, this.x + this.speed);
+    }
+
+    handleTouchMovement() {
+        if (this.touchCenterX !== null && this.touchMoveX !== null) {
+            const dx = this.touchMoveX - this.touchCenterX;
+            const dy = this.touchMoveY - this.touchCenterY;
+
+            this.x += dx * 0.1; // Adjust the multiplier for sensitivity
+            this.y += dy * 0.1;
+
+            // Update the touch center to prevent jumping
+            this.touchCenterX = this.touchMoveX;
+            this.touchCenterY = this.touchMoveY;
+
+            // Ensure the player stays within the canvas bounds
+            this.x = Math.max(0, Math.min(600 - this.diameter, this.x));
+            this.y = Math.max(0, Math.min(600 - this.diameter, this.y));
+        }
     }
 
     handleGameOver() {
@@ -168,10 +213,10 @@ class Game {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); // Clear the canvas
+        this.ctx.clearRect(0, 0, this.canvas.width / window.devicePixelRatio, this.canvas.height / window.devicePixelRatio); // Clear the canvas
         this.ctx.fillStyle = 'blue';
         this.ctx.beginPath();
-        this.ctx.ellipse(this.x, this.y, this.diameter / 2, this.diameter / 2, 0, 0, 2 * Math.PI);
+        this.ctx.ellipse(this.x + this.diameter / 2, this.y + this.diameter / 2, this.diameter / 2, this.diameter / 2, 0, 0, 2 * Math.PI);
         this.ctx.fill();
 
         this.bullets.forEach(bullet => bullet.draw(this.ctx));
