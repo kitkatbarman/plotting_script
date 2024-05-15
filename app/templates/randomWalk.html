@@ -93,7 +93,7 @@
             <label class="control-label" data-tippy-content="Adjust the thickness of the lines">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
         </div>
         <div class="control-group">
-            <label class="control-label" data-tippy-content="Zoom in and out">Zoom: <input type="range" id="zoom-slider" min="10" max="200" value="100"></label>
+            <label class="control-label" data-tippy-content="Zoom in and out (mouse scroll wheel works too)">Zoom: <input type="range" id="zoom-slider" min="10" max="200" value="100"></label>
         </div>
         <div class="control-group">
             <button id="save-button" class="control-button" data-tippy-content="Saves canvas to PNG">Save</button>
@@ -109,8 +109,8 @@
     <script src="https://unpkg.com/tippy.js@6"></script>
     <script>
         tippy('[data-tippy-content]', {
-            delay: [0, 0], // Set delay for show and hide
-            duration: [100, 100], // Set duration for show and hide animations
+            delay: [40, 40], // Set delay for show and hide
+            duration: [300, 300], // Set duration for show and hide animations
         });
 
         function isMobileDevice() {
