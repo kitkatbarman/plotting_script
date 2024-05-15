@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diffusion Simulation</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        .control-panel {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .control-panel input[type="range"] {
+            width: 300px;
+            margin: 10px;
+        }
+        .label {
+            text-align: center;
+            margin-top: 5px;
+        }
+        .y-label {
+            position: absolute;
+            transform: rotate(-90deg);
+            transform-origin: left top 0;
+            left: 20px;
+            top: 350px; /* Adjust as necessary */
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Diffusion Simulation</h1>
+    <canvas id="diffusionCanvas" width="800" height="400"></canvas>
+    <div class="control-panel">
+        <button onclick="startSimulation()">Start</button>
+        <button onclick="pauseSimulation()">Pause</button>
+        <button onclick="resetSimulation()">Reset</button>
+        <br>
+        <label for="temperature">Temperature:</label>
+        <input type="range" id="temperature" name="temperature" min="0.001" max="50" step="0.01" value="5" oninput="updateTemperature(this.value)">
+        <br>
+        <label for="numGas1">Number of Gas 1 Particles:</label>
+        <input type="range" id="numGas1" name="numGas1" min="0" max="2000" step="1" value="200" oninput="updateNumParticles(this.value, 'gas1')">
+        <span id="numGas1Value">500</span>
+        <br>
+        <label for="numGas2">Number of Gas 2 Particles:</label>
+        <input type="range" id="numGas2" name="numGas2" min="0" max="2000" step="1" value="200" oninput="updateNumParticles(this.value, 'gas2')">
+        <span id="numGas2Value">500</span>
+    </div>
+    <div style="position: relative; height: 250px;">
+        <canvas id="concentrationCanvas" width="800" height="200"></canvas>
+        <div class="y-label">Y: Relative Concentration</div>
+    </div>
+    <div class="label">
+        <label>X: Relative Distance</label>
+    </div>
+    <script src="{{ url_for('static', filename='js/diffusion.js') }}"></script>
+</body>
+</html>
