@@ -109,8 +109,30 @@ function saveDrawing() {
         }
     }
 
-    save(tempCanvas, 'random_walk.png');
+    // Check if the canvas size exceeds the limit
+    if (width + 2 * marginX > 16384 || height + 2 * marginY > 16384) {
+        alert("The image size is too large to save.");
+        return;
+    }
+
+    // Convert to data URL
+    let dataURL = tempCanvas.canvas.toDataURL('image/jpeg', 1.0); // 1.0 for high quality
+    // Create a link element
+    let link = document.createElement('a');
+    link.href = dataURL;
+    link.download = 'random_walk.jpg';
+
+    // Append the link to the body
+    document.body.appendChild(link);
+
+    // Programmatically click the link to trigger the download
+    link.click();
+
+    // Remove the link from the document
+    document.body.removeChild(link);
 }
+
+
 
 function moveRandomly() {
     let stepSize = useFractalStepSize ? calculateFractalStepSize() : baseStepSize;
