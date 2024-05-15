@@ -1,6 +1,6 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 0.5;
+let canvasScale = 0.5; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
 let baseStepSize = 50;
@@ -14,54 +14,60 @@ let timer = false;
 let followWalk = false;
 let backtrackStack = [];
 let lastDragPoint = null;
-let lineThickness = 2;
-let canvas;
-let initialPinchDistance = 0;
-let initialScale = 1.0;
+let lineThickness = 2; // Default line thickness
+let canvas; // Reference to the canvas
+let initialPinchDistance;
+let initialScale;
 
 function setup() {
     let canvasSize = isMobileDevice() ? 400 : 800;
     canvas = createCanvas(canvasSize, canvasSize);
-    canvas.parent('canvas-container');
+    canvas.parent('canvas-container'); // Attach the canvas to the div container
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
-    frameRate(10);
-    noLoop();
+    frameRate(10); // Start with a default speed
+    noLoop(); // Start with animation stopped
 
+    // Line thickness slider event listener
     document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
         lineThickness = e.target.value;
     });
 
+    // Speed slider event listener
     document.getElementById('speed-slider').addEventListener('input', (e) => {
         let speed = e.target.value;
         frameRate(map(speed, 0, 100, 1, 60));
     });
 
+    // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
         canvasScale = map(e.target.value, 0, 100, 0.01, 0.8);
         redraw();
     });
 
+    // Save button event listener
     document.getElementById('save-button').addEventListener('click', () => {
         saveDrawing();
     });
 
-    canvas.elt.addEventListener('touchstart', handleTouchStart, { passive: false });
-    canvas.elt.addEventListener('touchmove', handleTouchMove, { passive: false });
-    canvas.elt.addEventListener('touchend', handleTouchEnd, { passive: false });
+    // Add touch event listeners
+    canvas.elt.addEventListener('touchstart', handleTouchStart, false);
+    canvas.elt.addEventListener('touchmove', handleTouchMove, false);
 }
 
 function draw() {
     background(255);
     translate(translateX, translateY);
-    scale(canvasScale);
+    scale(canvasScale); // Use 'canvasScale' instead of 'scale'
 
     for (let i = 1; i < pathPoints.length; i++) {
         let prevPoint = pathPoints[i - 1];
         let currPoint = pathPoints[i];
 
+        // Check if the points are adjacent
         if (isAdjacent(prevPoint, currPoint)) {
+            // Draw all lines in black
             stroke(0);
-            strokeWeight(lineThickness);
+            strokeWeight(lineThickness); // Set line thickness based on slider value
             line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
         }
     }
@@ -91,7 +97,7 @@ function saveDrawing() {
     tempCanvas.translate(marginX - minX, marginY - minY);
 
     tempCanvas.background(255);
-    tempCanvas.scale(1);
+    tempCanvas.scale(1); // No need for canvasScale here
     for (let i = 1; i < pathPoints.length; i++) {
         let prevPoint = pathPoints[i - 1];
         let currPoint = pathPoints[i];
@@ -125,7 +131,7 @@ function moveRandomly() {
         currentLocation = chosenMove;
         pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
         stepCount++;
-        backtrackStack.push({ x: currentLocation.x, y: currentLocation.y });
+        backtrackStack.push({ x: currentLocation.x, y: currentLocation.y }); // Push forward moves onto the backtrack stack
     } else {
         handleBacktracking();
     }
@@ -184,17 +190,18 @@ function mouseWheel(event) {
         let zoomFactor = 1.1;
         let zoomAmount = (event.delta > 0) ? 1 / zoomFactor : zoomFactor;
         zoomAtMousePosition(zoomAmount, mouseX, mouseY);
-        return false;
+        return false; // Prevent default behavior
     }
 }
 
 function zoomAtMousePosition(zoomAmount, x, y) {
-    let wx = (x - translateX) / (width * canvasScale);
-    let wy = (y - translateY) / (height * canvasScale);
+    let wx = (x - translateX) / canvasScale;
+    let wy = (y - translateY) / canvasScale;
     canvasScale *= zoomAmount;
-    translateX = x - wx * (width * canvasScale);
-    translateY = y - wy * (height * canvasScale);
+    translateX = x - wx * canvasScale;
+    translateY = y - wy * canvasScale;
 
+    // Update the zoom slider to reflect the current canvasScale
     let zoomSlider = document.getElementById('zoom-slider');
     zoomSlider.value = map(canvasScale, 0.005, 0.6, 0, 100);
 }
@@ -207,22 +214,26 @@ function mousePressed() {
 
 function mouseDragged() {
     if (lastDragPoint && isMouseInsideCanvas()) {
-        let dx = mouseX - lastDragPoint.x;
-        let dy = mouseY - lastDragPoint.y;
-        translateX += dx;
-        translateY += dy;
+        translateX += mouseX - lastDragPoint.x;
+        translateY += mouseY - lastDragPoint.y;
         lastDragPoint = { x: mouseX, y: mouseY };
     }
 }
 
+function isMouseInsideCanvas() {
+    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
+}
+
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
 function handleTouchStart(e) {
-    if (e.touches.length === 1) {
-        lastDragPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    } else if (e.touches.length === 2) {
+    if (e.touches.length === 2) {
         initialPinchDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         initialScale = canvasScale;
     }
-    e.preventDefault();
+    lastDragPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
 }
 
 function handleTouchMove(e) {
@@ -239,15 +250,15 @@ function handleTouchMove(e) {
         let scaleChange = currentPinchDistance / initialPinchDistance;
 
         // Calculate the canvas coordinates of the midpoint before the scale change
-        let wx = (midX - translateX) / (width * canvasScale);
-        let wy = (midY - translateY) / (height * canvasScale);
+        let wx = (midX - translateX) / canvasScale;
+        let wy = (midY - translateY) / canvasScale;
 
         // Apply the scale change
         canvasScale = initialScale * scaleChange;
 
         // Calculate the new translate values to keep the midpoint in the same place
-        translateX = midX - wx * (width * canvasScale);
-        translateY = midY - wy * (height * canvasScale);
+        translateX = midX - wx * canvasScale;
+        translateY = midY - wy * canvasScale;
 
         // Optionally, you can add some boundaries or limits to the scaling and translation to avoid excessive zooming or panning
         canvasScale = constrain(canvasScale, 0.1, 4); // Adjust these limits as needed
@@ -255,28 +266,14 @@ function handleTouchMove(e) {
     e.preventDefault();
 }
 
-
-function handleTouchEnd(e) {
-    if (e.touches.length < 2) {
-        initialPinchDistance = 0;
-        initialScale = canvasScale;
-    }
-    lastDragPoint = null;
-    e.preventDefault();
-}
-
-function isMouseInsideCanvas() {
-    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
-}
-
 document.getElementById('start-button').addEventListener('click', () => {
     timer = true;
-    loop();
+    loop(); // Starts p5.js draw loop
 });
 
 document.getElementById('pause-button').addEventListener('click', () => {
     timer = false;
-    noLoop();
+    noLoop(); // Stops p5.js draw loop
 });
 
 document.getElementById('stop-button').addEventListener('click', () => {
@@ -287,18 +284,9 @@ document.getElementById('stop-button').addEventListener('click', () => {
     translateY = 0;
     backtrackStack = [];
     noLoop();
-    redraw();
+    redraw(); // Forces a redraw of the canvas
 });
 
 document.getElementById('follow-walk').addEventListener('change', (e) => {
     followWalk = e.target.checked;
 });
-
-document.getElementById('zoom-slider').addEventListener('input', (e) => {
-    canvasScale = map(e.target.value, 0, 100, 0.005, 0.6);
-    redraw();
-});
-
-function isMobileDevice() {
-    return /Mobi|Android/i.test(navigator.userAgent);
-}
