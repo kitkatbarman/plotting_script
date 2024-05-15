@@ -238,14 +238,23 @@ function handleTouchMove(e) {
         let currentPinchDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         let scaleChange = currentPinchDistance / initialPinchDistance;
 
+        // Calculate the world coordinates before the scale change
         let wx = (midX - translateX) / (width * canvasScale);
         let wy = (midY - translateY) / (height * canvasScale);
+
+        // Apply the scale change
         canvasScale = initialScale * scaleChange;
+
+        // Calculate the new translate values to keep the midpoint in the same place
         translateX = midX - wx * (width * canvasScale);
         translateY = midY - wy * (height * canvasScale);
+
+        // Optionally, you can add some boundaries or limits to the scaling and translation to avoid excessive zooming or panning
+        canvasScale = constrain(canvasScale, 0.1, 4); // Adjust these limits as needed
     }
     e.preventDefault();
 }
+
 
 function handleTouchEnd(e) {
     if (e.touches.length < 2) {
