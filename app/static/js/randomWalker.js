@@ -1,3 +1,5 @@
+console.log("randomWalker.js loaded successfully.");
+
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
 let scaleFactor = 1.0;
@@ -20,7 +22,7 @@ function setup() {
 function draw() {
     background(255);
     translate(translateX, translateY);
-    scale(scaleFactor);
+    scale(scaleFactor); // Use the p5.js scale function
 
     stroke(0);
     strokeWeight(document.getElementById('line-thickness-slider').value);
@@ -99,4 +101,9 @@ document.getElementById('speed-slider').addEventListener('input', (e) => {
     let speed = e.target.value;
     frameRate(map(speed, 0, 100, 1, 60));
     console.log("Speed changed to: " + speed); // Debugging step
+});
+
+document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
+    let lineThickness = e.target.value;
+    console.log("Line Thickness changed to: " + lineThickness); // Debugging step
 });
