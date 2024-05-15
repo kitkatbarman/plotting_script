@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bullet Dodge Game</title>
+    <title>Dodge!</title>
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
@@ -15,10 +16,40 @@
         }
         canvas {
             border: 1px solid black;
+            width: 100%; /* Ensure canvas takes full width */
+            height: auto; /* Maintain aspect ratio */
+            max-width: 600px; /* Maximum width for desktop */
+        }
+        #instructions {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        header {
+            display: none;
+        }
+        @media (max-width: 600px) {
+            header {
+                display: block;
+                width: 100%;
+                background-color: #333;
+                color: #fff;
+                padding: 10px 0;
+                text-align: center;
+                font-size: 20px;
+                position: fixed;
+                top: 0;
+                z-index: 1000;
+            }
+            body {
+                padding-top: 50px;
+            }
         }
     </style>
 </head>
 <body>
+    <header>Dodge!</header>
+    <h1>Dodge!</h1>
+    <div id="instructions">WASD/finger to move</div>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>

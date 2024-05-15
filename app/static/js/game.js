@@ -1,4 +1,4 @@
-// game.js
+// static/js/game.js
 class Bullet {
     constructor(x, y, xSpeed, ySpeed) {
         this.x = x;
@@ -52,9 +52,41 @@ class Game {
         document.addEventListener('keydown', (e) => this.keyStates[e.code] = true);
         document.addEventListener('keyup', (e) => this.keyStates[e.code] = false);
 
+        this.canvas.addEventListener('touchstart', (e) => this.handleTouch(e));
+        this.canvas.addEventListener('touchmove', (e) => this.handleTouch(e));
+        this.canvas.addEventListener('touchend', () => this.resetTouch());
+
+        window.addEventListener('resize', () => this.resizeCanvas());
+        this.resizeCanvas();
+
         this.moveTimer = setInterval(() => this.update(), 10);
         this.bulletTimer = setInterval(() => this.spawnBullet(), this.spawnDelay);
         this.difficultyTimer = setInterval(() => this.increaseDifficulty(), this.difficultyIncreaseInterval);
+
+        // Initial draw
+        this.draw();
+    }
+
+    handleTouch(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = this.canvas.getBoundingClientRect();
+        const touchX = touch.clientX - rect.left;
+        const touchY = touch.clientY - rect.top;
+
+        this.x = touchX - this.diameter / 2;
+        this.y = touchY - this.diameter / 2;
+    }
+
+    resetTouch() {
+        this.keyStates = {};
+    }
+
+    resizeCanvas() {
+        const ratio = window.devicePixelRatio || 1;
+        this.canvas.width = 600 * ratio;
+        this.canvas.height = 600 * ratio;
+        this.ctx.scale(ratio, ratio);
     }
 
     spawnBullet() {
@@ -135,7 +167,7 @@ class Game {
     }
 
     draw() {
-        this.ctx.clearRect(0, 0, 600, 600);
+        this.ctx.clearRect(0, 0, 600, 600); // Clear the canvas
         this.ctx.fillStyle = 'blue';
         this.ctx.beginPath();
         this.ctx.ellipse(this.x, this.y, this.diameter / 2, this.diameter / 2, 0, 0, 2 * Math.PI);
@@ -174,4 +206,5 @@ class Game {
 
 document.addEventListener('DOMContentLoaded', () => {
     const game = new Game();
+    game.draw(); // Initial draw
 });
