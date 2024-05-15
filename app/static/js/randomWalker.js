@@ -45,6 +45,7 @@ function touchStarted() {
         isPinching = false;
         lastTouches = [...touches];
     }
+    return false; // Prevent default
 }
 
 function touchMoved() {
@@ -56,6 +57,7 @@ function touchMoved() {
         translateY += touches[0].y - lastTouches[0].y;
         lastTouches = [...touches];
     }
+    return false; // Prevent default
 }
 
 function touchEnded() {
@@ -63,6 +65,7 @@ function touchEnded() {
         isPinching = false;
     }
     lastTouches = [...touches];
+    return false; // Prevent default
 }
 
 document.getElementById('start-button').addEventListener('click', () => {
