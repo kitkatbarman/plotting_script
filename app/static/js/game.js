@@ -74,8 +74,8 @@ class Game {
         const touchX = touch.clientX - rect.left;
         const touchY = touch.clientY - rect.top;
 
-        this.x = touchX - this.diameter / 2;
-        this.y = touchY - this.diameter / 2;
+        this.x = touchX * (600 / rect.width) - this.diameter / 2;
+        this.y = touchY * (600 / rect.height) - this.diameter / 2;
     }
 
     resetTouch() {
