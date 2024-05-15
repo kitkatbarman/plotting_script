@@ -8,6 +8,7 @@
     <meta http-equiv="Expires" content="0" />
 
     <title>Random Walk</title>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
     <style>
         body {
             margin: 0;
@@ -81,21 +82,21 @@
     <div id="mobile-message">Mobile</div>
     <div id="control-panel">
         <div class="control-group">
-            <button id="start-button" class="control-button" title="Starts or unpauses walk">Start</button>
-            <button id="pause-button" class="control-button" title="Pauses walk">Pause</button>
-            <button id="stop-button" class="control-button" title="Stops walk and clears canvas">Stop</button>
+            <button id="start-button" class="control-button" data-tippy-content="Starts or unpauses walk">Start</button>
+            <button id="pause-button" class="control-button" data-tippy-content="Pauses walk">Pause</button>
+            <button id="stop-button" class="control-button" data-tippy-content="Stops walk and clears canvas">Stop</button>
         </div>
         <div class="control-group">
-            <label class="control-label" title="Adjust the speed of the walk">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
+            <label class="control-label" data-tippy-content="Adjust the speed of the walk">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
         </div>
         <div class="control-group">
-            <label class="control-label" title="Adjust the thickness of the lines">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
+            <label class="control-label" data-tippy-content="Adjust the thickness of the lines">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
         </div>
         <div class="control-group">
-            <label class="control-label" title="Zoom in and out">Zoom: <input type="range" id="zoom-slider" min="10" max="200" value="100"></label>
+            <label class="control-label" data-tippy-content="Zoom in and out">Zoom: <input type="range" id="zoom-slider" min="10" max="200" value="100"></label>
         </div>
         <div class="control-group">
-            <button id="save-button" class="control-button" title="Saves canvas to PNG">Save</button>
+            <button id="save-button" class="control-button" data-tippy-content="Saves canvas to PNG">Save</button>
         </div>
     </div>
     <div id="canvas-container">
@@ -104,7 +105,14 @@
     <p>Static URL: {{ url_for('static', filename='js/randomWalker.js') }}?v={{ time() }}</p>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="{{ url_for('static', filename='js/randomWalker.js') }}?v={{ time() }}"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
     <script>
+        tippy('[data-tippy-content]', {
+            delay: [0, 0], // Set delay for show and hide
+            duration: [100, 100], // Set duration for show and hide animations
+        });
+
         function isMobileDevice() {
             return /Mobi|Android/i.test(navigator.userAgent);
         }
