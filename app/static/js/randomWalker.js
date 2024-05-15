@@ -233,9 +233,16 @@ function handleTouchMove(e) {
         translateY += dy;
         lastDragPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     } else if (e.touches.length === 2) {
+        let midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        let midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
         let currentPinchDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         let scaleChange = currentPinchDistance / initialPinchDistance;
+
+        let wx = (midX - translateX) / (width * canvasScale);
+        let wy = (midY - translateY) / (height * canvasScale);
         canvasScale = initialScale * scaleChange;
+        translateX = midX - wx * (width * canvasScale);
+        translateY = midY - wy * (height * canvasScale);
     }
     e.preventDefault();
 }
