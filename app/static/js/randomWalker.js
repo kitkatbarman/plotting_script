@@ -1,9 +1,9 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 1.0; // Renamed from 'scale' to 'canvasScale'
+let canvasScale = 0.5; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
-const BASE_STEP_SIZE = 50;
+let baseStepSize = 50;
 let useFractalStepSize = false;
 let fractalSteps = 30;
 let fractalStepCounter = 0;
@@ -18,7 +18,8 @@ let lineThickness = 2; // Default line thickness
 let canvas; // Reference to the canvas
 
 function setup() {
-    canvas = createCanvas(800, 800);
+    let canvasSize = isMobileDevice() ? 400 : 800;
+    canvas = createCanvas(canvasSize, canvasSize);
     canvas.parent('canvas-container'); // Attach the canvas to the div container
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
     frameRate(10); // Start with a default speed
@@ -34,20 +35,33 @@ function setup() {
         let speed = e.target.value;
         frameRate(map(speed, 0, 100, 1, 60));
     });
+
+    // Zoom slider event listener
+    document.getElementById('zoom-slider').addEventListener('input', (e) => {
+        canvasScale = map(e.target.value, 0, 100, 0.01, 0.8);
+        redraw();
+    });
+
+    // Save button event listener
+    document.getElementById('save-button').addEventListener('click', () => {
+        saveDrawing();
+    });
 }
 
 function draw() {
     background(255);
     translate(translateX, translateY);
     scale(canvasScale); // Use 'canvasScale' instead of 'scale'
-    
-    stroke(0);
-    strokeWeight(lineThickness); // Set line thickness based on slider value
 
     for (let i = 1; i < pathPoints.length; i++) {
         let prevPoint = pathPoints[i - 1];
         let currPoint = pathPoints[i];
+
+        // Check if the points are adjacent
         if (isAdjacent(prevPoint, currPoint)) {
+            // Draw all lines in black
+            stroke(0);
+            strokeWeight(lineThickness); // Set line thickness based on slider value
             line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
         }
     }
@@ -55,12 +69,45 @@ function draw() {
     if (timer) {
         moveRandomly();
     }
-    
+
     adjustView();
 }
 
+function saveDrawing() {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    pathPoints.forEach(point => {
+        if (point.x < minX) minX = point.x;
+        if (point.y < minY) minY = point.y;
+        if (point.x > maxX) maxX = point.x;
+        if (point.y > maxY) maxY = point.y;
+    });
+
+    let width = maxX - minX;
+    let height = maxY - minY;
+    let marginX = width * 0.05;
+    let marginY = height * 0.05;
+
+    let tempCanvas = createGraphics(width + 2 * marginX, height + 2 * marginY);
+    tempCanvas.translate(marginX - minX, marginY - minY);
+
+    tempCanvas.background(255);
+    tempCanvas.scale(1); // No need for canvasScale here
+    for (let i = 1; i < pathPoints.length; i++) {
+        let prevPoint = pathPoints[i - 1];
+        let currPoint = pathPoints[i];
+
+        if (isAdjacent(prevPoint, currPoint)) {
+            tempCanvas.stroke(0);
+            tempCanvas.strokeWeight(lineThickness);
+            tempCanvas.line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
+        }
+    }
+
+    save(tempCanvas, 'random_walk.png');
+}
+
 function moveRandomly() {
-    let stepSize = useFractalStepSize ? calculateFractalStepSize() : BASE_STEP_SIZE;
+    let stepSize = useFractalStepSize ? calculateFractalStepSize() : baseStepSize;
     let moves = [
         { x: 0, y: -stepSize },
         { x: stepSize, y: 0 },
@@ -88,10 +135,10 @@ function calculateFractalStepSize() {
     if (fractalStepCounter === 0 || fractalStepCounter >= fractalSteps) {
         fractalStepCounter = 0;
         stepCount++;
-        return BASE_STEP_SIZE + Math.sin(stepCount / 2.0) * BASE_STEP_SIZE;
+        return baseStepSize + Math.sin(stepCount / 2.0) * baseStepSize;
     }
     fractalStepCounter++;
-    return BASE_STEP_SIZE;
+    return baseStepSize;
 }
 
 function isInsideBarrier(point) {
@@ -118,7 +165,7 @@ function handleBacktracking() {
 function isAdjacent(point1, point2) {
     let dx = Math.abs(point1.x - point2.x);
     let dy = Math.abs(point1.y - point2.y);
-    return (dx === BASE_STEP_SIZE && dy === 0) || (dx === 0 && dy === BASE_STEP_SIZE);
+    return (dx === baseStepSize && dy === 0) || (dx === 0 && dy === baseStepSize);
 }
 
 function adjustView() {
@@ -135,13 +182,22 @@ function adjustView() {
 function mouseWheel(event) {
     if (isMouseInsideCanvas()) {
         let zoomFactor = 1.1;
-        if (event.delta > 0) {
-            canvasScale /= zoomFactor;
-        } else {
-            canvasScale *= zoomFactor;
-        }
+        let zoomAmount = (event.delta > 0) ? 1 / zoomFactor : zoomFactor;
+        zoomAtMousePosition(zoomAmount, mouseX, mouseY);
         return false; // Prevent default behavior
     }
+}
+
+function zoomAtMousePosition(zoomAmount, x, y) {
+    let wx = (x - translateX) / (width * canvasScale);
+    let wy = (y - translateY) / (height * canvasScale);
+    canvasScale *= zoomAmount;
+    translateX = x - wx * (width * canvasScale);
+    translateY = y - wy * (height * canvasScale);
+
+    // Update the zoom slider to reflect the current canvasScale
+    let zoomSlider = document.getElementById('zoom-slider');
+    zoomSlider.value = map(canvasScale, 0.005, 0.6, 0, 100);
 }
 
 function mousePressed() {
@@ -162,8 +218,8 @@ function isMouseInsideCanvas() {
     return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
 }
 
-function saveCanvasToFile() {
-    saveCanvas(canvas, 'random_walk', 'png');
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
 }
 
 document.getElementById('start-button').addEventListener('click', () => {
@@ -190,5 +246,3 @@ document.getElementById('stop-button').addEventListener('click', () => {
 document.getElementById('follow-walk').addEventListener('change', (e) => {
     followWalk = e.target.checked;
 });
-
-document.getElementById('save-button').addEventListener('click', saveCanvasToFile);
