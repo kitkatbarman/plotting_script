@@ -38,7 +38,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.01, 5); // Changed to 0.01 and 5 for extended zoom range
+        canvasScale = map(e.target.value, 0, 100, 0.05, 1.5); // Changed to 0.01 and 5 for extended zoom range
         redraw();
     });
 }
