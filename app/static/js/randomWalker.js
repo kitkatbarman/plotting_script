@@ -20,6 +20,9 @@ function setup() {
     canvas.elt.addEventListener('touchstart', (e) => e.preventDefault(), { passive: false });
     canvas.elt.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
     canvas.elt.addEventListener('touchend', (e) => e.preventDefault(), { passive: false });
+
+    // Add mouse wheel event for desktop zooming
+    canvas.elt.addEventListener('wheel', handleMouseWheel, { passive: false });
 }
 
 function draw() {
@@ -57,6 +60,10 @@ function touchMoved() {
     if (isPinching && touches.length === 2) {
         let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
         scaleFactor = initialScale * (currentDistance / initialDistance);
+        // Adjust the translation to zoom in/out around the center point between the touches
+        let midX = (touches[0].x + touches[1].x) / 2;
+        let midY = (touches[0].y + touches[1].y) / 2;
+        adjustView(midX, midY, currentDistance / initialDistance);
     } else if (!isPinching && touches.length === 1 && lastTouches.length === 1) {
         translateX += touches[0].x - lastTouches[0].x;
         translateY += touches[0].y - lastTouches[0].y;
@@ -71,6 +78,21 @@ function touchEnded() {
     }
     lastTouches = [...touches];
     return false; // Prevent default
+}
+
+function handleMouseWheel(e) {
+    e.preventDefault();
+    let delta = -e.deltaY * 0.01;
+    let factor = 1 + delta;
+    scaleFactor *= factor;
+
+    // Adjust the translation to zoom in/out around the mouse pointer
+    adjustView(e.offsetX, e.offsetY, factor);
+}
+
+function adjustView(centerX, centerY, zoomFactor) {
+    translateX = (translateX - centerX) * zoomFactor + centerX;
+    translateY = (translateY - centerY) * zoomFactor + centerY;
 }
 
 document.getElementById('start-button').addEventListener('click', () => {
