@@ -1,6 +1,6 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 0.5; // Renamed from 'scale' to 'canvasScale'
+let canvasScale = 0.4; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
 let baseStepSize = 50;
@@ -38,13 +38,13 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.01, 5);
+        canvasScale = map(e.target.value, 0, 100, 0.07, 1);
         redraw();
     });
 
     // Save button event listener
     document.getElementById('save-button').addEventListener('click', () => {
-        saveCanvas(canvas, 'random_walk', 'png');
+        saveDrawing();
     });
 }
 
@@ -71,6 +71,39 @@ function draw() {
     }
 
     adjustView();
+}
+
+function saveDrawing() {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    pathPoints.forEach(point => {
+        if (point.x < minX) minX = point.x;
+        if (point.y < minY) minY = point.y;
+        if (point.x > maxX) maxX = point.x;
+        if (point.y > maxY) maxY = point.y;
+    });
+
+    let width = maxX - minX;
+    let height = maxY - minY;
+    let marginX = width * 0.05;
+    let marginY = height * 0.05;
+
+    let tempCanvas = createGraphics(width + 2 * marginX, height + 2 * marginY);
+    tempCanvas.translate(marginX - minX, marginY - minY);
+
+    tempCanvas.background(255);
+    tempCanvas.scale(1); // No need for canvasScale here
+    for (let i = 1; i < pathPoints.length; i++) {
+        let prevPoint = pathPoints[i - 1];
+        let currPoint = pathPoints[i];
+
+        if (isAdjacent(prevPoint, currPoint)) {
+            tempCanvas.stroke(0);
+            tempCanvas.strokeWeight(lineThickness);
+            tempCanvas.line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
+        }
+    }
+
+    save(tempCanvas, 'random_walk.png');
 }
 
 function moveRandomly() {
@@ -156,7 +189,7 @@ function mouseWheel(event) {
         }
         // Update the zoom slider to reflect the current canvasScale
         let zoomSlider = document.getElementById('zoom-slider');
-        zoomSlider.value = map(canvasScale, 0.05, 1, 0, 100);
+        zoomSlider.value = map(canvasScale, 0.01, 5, 0, 100);
         return false; // Prevent default behavior
     }
 }
@@ -170,7 +203,7 @@ function mousePressed() {
 function mouseDragged() {
     if (lastDragPoint && isMouseInsideCanvas()) {
         translateX += mouseX - lastDragPoint.x;
-        translateY += mouseY - lastDragPoint.y;
+        translateY += mouseX - lastDragPoint.y;
         lastDragPoint = { x: mouseX, y: mouseY };
     }
 }
