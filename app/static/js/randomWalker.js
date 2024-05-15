@@ -34,6 +34,11 @@ function setup() {
         let speed = e.target.value;
         frameRate(map(speed, 0, 100, 1, 60));
     });
+
+    // Zoom slider event listener
+    document.getElementById('zoom-slider').addEventListener('input', (e) => {
+        canvasScale = e.target.value;
+    });
 }
 
 function draw() {
@@ -142,6 +147,7 @@ function mouseWheel(event) {
         } else {
             canvasScale *= zoomFactor;
         }
+        document.getElementById('zoom-slider').value = canvasScale;
         return false; // Prevent default behavior
     }
 }
