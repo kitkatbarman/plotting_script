@@ -9,7 +9,7 @@ let initialDistance = 0;
 let initialScale = 1.0;
 let lastTouches = [];
 
-window.onload = function () {
+function setup() {
     let canvas = createCanvas(800, 800);
     canvas.parent('canvas-container');
     canvas.elt.style.touchAction = 'none'; // Disable default touch actions
@@ -24,41 +24,7 @@ window.onload = function () {
 
     // Add mouse wheel event for desktop zooming
     canvas.elt.addEventListener('wheel', handleMouseWheel, { passive: false });
-
-    // Set up button event listeners after DOM is fully loaded
-    document.getElementById('start-button').addEventListener('click', () => {
-        timer = true;
-        loop();
-        console.log("Start button clicked."); // Debugging step
-    });
-
-    document.getElementById('pause-button').addEventListener('click', () => {
-        noLoop();
-        console.log("Pause button clicked."); // Debugging step
-    });
-
-    document.getElementById('stop-button').addEventListener('click', () => {
-        timer = false;
-        noLoop();
-        pathPoints = [{ x: 400, y: 400 }];
-        currentLocation = { x: 400, y: 400 };
-        translateX = 0;
-        translateY = 0;
-        redraw();
-        console.log("Stop button clicked."); // Debugging step
-    });
-
-    document.getElementById('follow-walk').addEventListener('change', (e) => {
-        followWalk = e.target.checked;
-        console.log("Follow Walk changed to: " + followWalk); // Debugging step
-    });
-
-    document.getElementById('speed-slider').addEventListener('input', (e) => {
-        let speed = e.target.value;
-        frameRate(map(speed, 0, 100, 1, 60));
-        console.log("Speed changed to: " + speed); // Debugging step
-    });
-};
+}
 
 function draw() {
     background(255);
@@ -136,3 +102,38 @@ function adjustView(centerX, centerY, newScale) {
     translateX = (translateX - centerX) * zoomFactor + centerX;
     translateY = (translateY - centerY) * zoomFactor + centerY;
 }
+
+window.onload = function() {
+    document.getElementById('start-button').addEventListener('click', () => {
+        timer = true;
+        loop();
+        console.log("Start button clicked."); // Debugging step
+    });
+
+    document.getElementById('pause-button').addEventListener('click', () => {
+        noLoop();
+        console.log("Pause button clicked."); // Debugging step
+    });
+
+    document.getElementById('stop-button').addEventListener('click', () => {
+        timer = false;
+        noLoop();
+        pathPoints = [{ x: 400, y: 400 }];
+        currentLocation = { x: 400, y: 400 };
+        translateX = 0;
+        translateY = 0;
+        redraw();
+        console.log("Stop button clicked."); // Debugging step
+    });
+
+    document.getElementById('follow-walk').addEventListener('change', (e) => {
+        followWalk = e.target.checked;
+        console.log("Follow Walk changed to: " + followWalk); // Debugging step
+    });
+
+    document.getElementById('speed-slider').addEventListener('input', (e) => {
+        let speed = e.target.value;
+        frameRate(map(speed, 0, 100, 1, 60));
+        console.log("Speed changed to: " + speed); // Debugging step
+    });
+};
