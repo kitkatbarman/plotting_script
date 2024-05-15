@@ -3,10 +3,6 @@ let currentLocation = { x: 400, y: 400 };
 let scaleFactor = 1.0;
 let translateX = 0;
 let translateY = 0;
-let initialDistance = 0;
-let initialScale = 1.0;
-let isPinching = false;
-let lastTouches = [];
 let timer = false; // Initialize timer variable
 
 function setup() {
@@ -96,9 +92,4 @@ document.getElementById('speed-slider').addEventListener('input', (e) => {
     let speed = e.target.value;
     frameRate(map(speed, 0, 100, 1, 60));
     console.log("Speed changed to: " + speed); // Debugging step
-});
-
-document.getElementById('zoom-slider').addEventListener('input', (e) => {
-    scaleFactor = e.target.value;
-    console.log("Zoom changed to: " + scaleFactor); // Debugging step
 });
