@@ -1,58 +1,25 @@
+<!-- game.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Game</title>
+    <title>Bullet Dodge Game</title>
     <style>
-        body { margin: 0; }
-        canvas { display: block; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        canvas {
+            border: 1px solid black;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
 </head>
 <body>
-<script>
-    var config = {
-        type: Phaser.AUTO,
-        width: 600,
-        height: 600,
-        scene: {
-            preload: preload,
-            create: create,
-            update: update
-        }
-    };
-
-    var game = new Phaser.Game(config);
-    var player;
-    var cursors;
-
-    function preload() {
-        this.load.image('player', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAOUlEQVR4AWP4TwPTgwAqUjIJV0KyYAcOGAwdSosUHBhCYYwA/7x8/7nGRlAAAAAElFTkSuQmCC');
-    }
-
-    function create() {
-        player = this.add.circle(300, 300, 25, 0x0000ff);
-        cursors = this.input.keyboard.createCursorKeys();
-    }
-
-    function update() {
-        if (cursors.left.isDown) {
-            player.x -= 5;
-        } else if (cursors.right.isDown) {
-            player.x += 5;
-        }
-
-        if (cursors.up.isDown) {
-            player.y -= 5;
-        } else if (cursors.down.isDown) {
-            player.y += 5;
-        }
-
-        // Keep the player within the game boundaries
-        player.x = Phaser.Math.Clamp(player.x, 25, 575);
-        player.y = Phaser.Math.Clamp(player.y, 25, 575);
-    }
-</script>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>
 </html>

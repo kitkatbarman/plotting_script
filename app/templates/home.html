@@ -1,3 +1,4 @@
+<!-- home.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,10 +7,11 @@
     <title>Home - My Web Apps</title>
 </head>
 <body>
-    <h1>Usefu-... less? webapps - test</h1>
+    <h1>Useful Web Apps</h1>
     <p><a href="{{ url_for('investment_app.investment_app_route', _external=True) }}">Investment Growth Calculator</a></p>
     <p><a href="{{ url_for('click_button.click_button_page', _external=True) }}">Click a Button</a></p>
     <p><a href="{{ url_for('break_button.break_button_page', _external=True) }}">Break the Button</a></p>
     <p><a href="{{ url_for('randomWalk.randomWalk_page', _external=True) }}">Random Walk Simulation</a></p>
+    <p><a href="{{ url_for('bullet_dodge.bullet_dodge_page', _external=True) }}">Bullet Dodge Game</a></p> <!-- New link -->
 </body>
 </html>
