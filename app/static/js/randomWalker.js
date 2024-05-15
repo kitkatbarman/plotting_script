@@ -40,7 +40,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.01, 0.8);
+        canvasScale = map(e.target.value, 0, 100, 0.01, 2.0);
         redraw();
     });
 
@@ -203,7 +203,7 @@ function zoomAtMousePosition(zoomAmount, x, y) {
 
     // Update the zoom slider to reflect the current canvasScale
     let zoomSlider = document.getElementById('zoom-slider');
-    zoomSlider.value = map(canvasScale, 0.005, 0.6, 0, 100);
+    zoomSlider.value = map(canvasScale, 0.01, 2.0, 0, 100);
 }
 
 function mousePressed() {
@@ -261,7 +261,11 @@ function handleTouchMove(e) {
         translateY = midY - wy * canvasScale;
 
         // Optionally, you can add some boundaries or limits to the scaling and translation to avoid excessive zooming or panning
-        canvasScale = constrain(canvasScale, 0.1, 4); // Adjust these limits as needed
+        canvasScale = constrain(canvasScale, 0.01, 2.0); // Adjust these limits as needed
+
+        // Update the zoom slider to reflect the current canvasScale
+        let zoomSlider = document.getElementById('zoom-slider');
+        zoomSlider.value = map(canvasScale, 0.01, 2.0, 0, 100);
     }
     e.preventDefault();
 }
