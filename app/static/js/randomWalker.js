@@ -1,6 +1,6 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 1.0; // Renamed from 'scale' to 'canvasScale'
+let canvasScale = 0.5; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
 let baseStepSize = 50;
@@ -38,8 +38,13 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.05, 1.5); // Changed to 0.01 and 5 for extended zoom range
+        canvasScale = map(e.target.value, 0, 100, 0.01, 5);
         redraw();
+    });
+
+    // Save button event listener
+    document.getElementById('save-button').addEventListener('click', () => {
+        saveCanvas(canvas, 'random_walk', 'png');
     });
 }
 
@@ -149,7 +154,9 @@ function mouseWheel(event) {
         } else {
             canvasScale *= zoomFactor;
         }
-        document.getElementById('zoom-slider').value = map(canvasScale, 0.01, 5, 0, 100); // Changed to 0.01 and 5 for extended zoom range
+        // Update the zoom slider to reflect the current canvasScale
+        let zoomSlider = document.getElementById('zoom-slider');
+        zoomSlider.value = map(canvasScale, 0.05, 1, 0, 100);
         return false; // Prevent default behavior
     }
 }

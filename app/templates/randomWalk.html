@@ -6,6 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-store" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+
     <title>Random Walk</title>
     <style>
         body {
@@ -82,6 +83,7 @@
             <button id="start-button" class="control-button">Start</button>
             <button id="pause-button" class="control-button">Pause</button>
             <button id="stop-button" class="control-button">Stop</button>
+            <button id="save-button" class="control-button">Save</button>
         </div>
         <div class="control-group">
             <label class="control-label">Speed: <input type="range" id="speed-slider" min="0" max="100" value="50"></label>
@@ -90,10 +92,10 @@
             <label class="control-label">Line Thickness: <input type="range" id="line-thickness-slider" min="1" max="10" value="2"></label>
         </div>
         <div class="control-group">
-            <label class="control-label">Zoom: <input type="range" id="zoom-slider" min="0" max="100" value="50"></label>
+            <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
         </div>
         <div class="control-group">
-            <label class="control-label"><input type="checkbox" id="follow-walk"> Follow Walk</label>
+            <label class="control-label">Zoom: <input type="range" id="zoom-slider" min="0" max="100" value="50"></label>
         </div>
     </div>
     <div id="canvas-container">
