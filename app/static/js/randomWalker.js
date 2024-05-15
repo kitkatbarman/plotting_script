@@ -97,100 +97,97 @@ function calculateFractalStepSize() {
         stepCount++;
         return baseStepSize + Math.sin(stepCount / 2.0) * baseStepSize;
     }
-    fractalStepCounter++;
-    return baseStepSize;
-}
-
-function isInsideBarrier(point) {
-    for (let barrier of barriers) {
-        if (barrier.contains(point.x, point.y)) {
-            return true;
+    function isInsideBarrier(point) {
+        for (let barrier of barriers) {
+            if (barrier.contains(point.x, point.y)) {
+                return true;
+            }
         }
+        return false;
     }
-    return false;
-}
-
-function handleBacktracking() {
-    if (backtrackStack.length > 0) {
-        let lastMove = backtrackStack.pop();
-        currentLocation = { x: lastMove.x, y: lastMove.y };
-        pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: true });
-        stepCount++;
-    } else {
-        noLoop();
-        alert("No more possible moves and no backtrack options! The simulation has ended.");
-    }
-}
-
-function isAdjacent(point1, point2) {
-    let dx = Math.abs(point1.x - point2.x);
-    let dy = Math.abs(point1.y - point2.y);
-    return (dx === baseStepSize && dy === 0) || (dx === 0 && dy === baseStepSize);
-}
-
-function adjustView() {
-    if (followWalk) {
-        let centerX = width / 2;
-        let centerY = height / 2;
-        let targetX = centerX - currentLocation.x * canvasScale;
-        let targetY = centerY - currentLocation.y * canvasScale;
-        translateX += (targetX - translateX) * 0.1;
-        translateY += (targetY - translateY) * 0.1;
-    }
-}
-
-function mouseWheel(event) {
-    if (isMouseInsideCanvas()) {
-        let zoomFactor = 1.1;
-        if (event.delta > 0) {
-            canvasScale /= zoomFactor;
+    
+    function handleBacktracking() {
+        if (backtrackStack.length > 0) {
+            let lastMove = backtrackStack.pop();
+            currentLocation = { x: lastMove.x, y: lastMove.y };
+            pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: true });
+            stepCount++;
         } else {
-            canvasScale *= zoomFactor;
+            noLoop();
+            alert("No more possible moves and no backtrack options! The simulation has ended.");
         }
-        document.getElementById('zoom-slider').value = canvasScale;
-        return false; // Prevent default behavior
     }
-}
-
-function mousePressed() {
-    if (isMouseInsideCanvas()) {
-        lastDragPoint = { x: mouseX, y: mouseY };
+    
+    function isAdjacent(point1, point2) {
+        let dx = Math.abs(point1.x - point2.x);
+        let dy = Math.abs(point1.y - point2.y);
+        return (dx === baseStepSize && dy === 0) || (dx === 0 && dy === baseStepSize);
     }
-}
-
-function mouseDragged() {
-    if (lastDragPoint && isMouseInsideCanvas()) {
-        translateX += mouseX - lastDragPoint.x;
-        translateY += mouseY - lastDragPoint.y;
-        lastDragPoint = { x: mouseX, y: mouseY };
+    
+    function adjustView() {
+        if (followWalk) {
+            let centerX = width / 2;
+            let centerY = height / 2;
+            let targetX = centerX - currentLocation.x * canvasScale;
+            let targetY = centerY - currentLocation.y * canvasScale;
+            translateX += (targetX - translateX) * 0.1;
+            translateY += (targetY - translateY) * 0.1;
+        }
     }
+    
+    function mouseWheel(event) {
+        if (isMouseInsideCanvas()) {
+            let zoomFactor = 1.1;
+            if (event.delta > 0) {
+                canvasScale /= zoomFactor;
+            } else {
+                canvasScale *= zoomFactor;
+            }
+            document.getElementById('zoom-slider').value = canvasScale; // Update slider value
+            return false; // Prevent default behavior
+        }
+    }
+    
+    function mousePressed() {
+        if (isMouseInsideCanvas()) {
+            lastDragPoint = { x: mouseX, y: mouseY };
+        }
+    }
+    
+    function mouseDragged() {
+        if (lastDragPoint && isMouseInsideCanvas()) {
+            translateX += mouseX - lastDragPoint.x;
+            translateY += mouseY - lastDragPoint.y;
+            lastDragPoint = { x: mouseX, y: mouseY };
+        }
+    }
+    
+    function isMouseInsideCanvas() {
+        return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
+    }
+    
+    document.getElementById('start-button').addEventListener('click', () => {
+        timer = true;
+        loop(); // Starts p5.js draw loop
+    });
+    
+    document.getElementById('pause-button').addEventListener('click', () => {
+        timer = false;
+        noLoop(); // Stops p5.js draw loop
+    });
+    
+    document.getElementById('stop-button').addEventListener('click', () => {
+        timer = false;
+        pathPoints = [{ x: 400, y: 400, isBacktrack: false }];
+        currentLocation = { x: 400, y: 400 };
+        translateX = 0;
+        translateY = 0;
+        backtrackStack = [];
+        noLoop();
+        redraw(); // Forces a redraw of the canvas
+    });
+    
+    document.getElementById('follow-walk').addEventListener('change', (e) => {
+        followWalk = e.target.checked;
+    });
 }
-
-function isMouseInsideCanvas() {
-    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
-}
-
-document.getElementById('start-button').addEventListener('click', () => {
-    timer = true;
-    loop(); // Starts p5.js draw loop
-});
-
-document.getElementById('pause-button').addEventListener('click', () => {
-    timer = false;
-    noLoop(); // Stops p5.js draw loop
-});
-
-document.getElementById('stop-button').addEventListener('click', () => {
-    timer = false;
-    pathPoints = [{ x: 400, y: 400, isBacktrack: false }];
-    currentLocation = { x: 400, y: 400 };
-    translateX = 0;
-    translateY = 0;
-    backtrackStack = [];
-    noLoop();
-    redraw(); // Forces a redraw of the canvas
-});
-
-document.getElementById('follow-walk').addEventListener('change', (e) => {
-    followWalk = e.target.checked;
-});
