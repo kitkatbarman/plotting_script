@@ -37,7 +37,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.5, 2);
+        canvasScale = map(e.target.value, 0, 100, 0.1, 2);
         redraw();
     });
 }
@@ -148,7 +148,7 @@ function mouseWheel(event) {
         } else {
             canvasScale *= zoomFactor;
         }
-        document.getElementById('zoom-slider').value = map(canvasScale, 0.5, 2, 0, 100); // Update slider value
+        document.getElementById('zoom-slider').value = map(canvasScale, 0.1, 2, 0, 100); // Sync slider with zoom level
         return false; // Prevent default behavior
     }
 }
