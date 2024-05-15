@@ -184,6 +184,7 @@ function drawConcentrationPlot() {
         concentrationCtx.moveTo(x, concentrationCanvas.height);
         concentrationCtx.lineTo(x, concentrationCanvas.height - tickHeight);
         concentrationCtx.stroke();
+        concentrationCtx.textAlign = "center";
         concentrationCtx.fillText((i / numTicks).toFixed(1), x, concentrationCanvas.height - tickHeight - 5);
     }
 
@@ -194,7 +195,8 @@ function drawConcentrationPlot() {
         concentrationCtx.moveTo(0, concentrationCanvas.height - y);
         concentrationCtx.lineTo(tickHeight, concentrationCanvas.height - y);
         concentrationCtx.stroke();
-        concentrationCtx.fillText((maxConcentration * i / numTicks).toFixed(1), tickHeight + 5, concentrationCanvas.height - y + 3);
+        concentrationCtx.textAlign = "right";
+        concentrationCtx.fillText((maxConcentration * i / numTicks).toFixed(1), tickHeight + 20, concentrationCanvas.height - y + 3);
     }
 
     // Draw red concentration line, skipping the first and last bins
@@ -224,6 +226,21 @@ function drawConcentrationPlot() {
         }
     }
     concentrationCtx.stroke();
+
+    // Draw axis labels
+    concentrationCtx.save();
+    concentrationCtx.font = "16px Arial";
+
+    // X-axis label
+    concentrationCtx.textAlign = "center";
+    concentrationCtx.fillText("Relative Distance", concentrationCanvas.width / 2, concentrationCanvas.height + 30);
+
+    // Y-axis label (rotated)
+    concentrationCtx.translate(-40, concentrationCanvas.height / 2);
+    concentrationCtx.rotate(-Math.PI / 2);
+    concentrationCtx.textAlign = "center";
+    concentrationCtx.fillText("Relative Concentration", 0, 0);
+    concentrationCtx.restore();
 }
 
 function animate() {
