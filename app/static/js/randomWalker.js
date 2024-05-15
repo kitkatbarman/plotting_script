@@ -22,6 +22,9 @@ function setup() {
 function draw() {
     background(255);
     translate(translateX, translateY);
+
+    // Check if scale is a function
+    console.log("Type of scale:", typeof scale); // Debugging step
     scale(scaleFactor); // Use the p5.js scale function
 
     stroke(0);
