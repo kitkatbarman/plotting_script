@@ -38,7 +38,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.01, 5);
+        canvasScale = map(e.target.value, 0, 100, 0.01, 0.8);
         redraw();
     });
 
