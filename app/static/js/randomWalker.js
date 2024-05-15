@@ -215,39 +215,38 @@ function mouseDragged() {
     }
 }
 
-function touchStarted() {
-    if (touches.length === 1) {
-        lastDragPoint = { x: touches[0].clientX, y: touches[0].clientY };
-    } else if (touches.length === 2) {
-        initialPinchDistance = dist(touches[0].clientX, touches[0].clientY, touches[1].clientX, touches[1].clientY);
+function handleTouchStart(e) {
+    if (e.touches.length === 1) {
+        lastDragPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 2) {
+        initialPinchDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         initialScale = canvasScale;
     }
-    return false; // Prevent default
+    e.preventDefault();
 }
 
-function touchMoved() {
-    if (touches.length === 1 && lastDragPoint) {
-        let dx = touches[0].clientX - lastDragPoint.x;
-        let dy = touches[0].clientY - lastDragPoint.y;
+function handleTouchMove(e) {
+    if (e.touches.length === 1 && lastDragPoint) {
+        let dx = e.touches[0].clientX - lastDragPoint.x;
+        let dy = e.touches[0].clientY - lastDragPoint.y;
         translateX += dx;
         translateY += dy;
-        lastDragPoint = { x: touches[0].clientX, y: touches[0].clientY };
-    } else if (touches.length === 2) {
-        let currentPinchDistance = dist(touches[0].clientX, touches[0].clientY, touches[1].clientX, touches[1].clientY);
+        lastDragPoint = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 2) {
+        let currentPinchDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         let scaleChange = currentPinchDistance / initialPinchDistance;
         canvasScale = initialScale * scaleChange;
-        return false;
     }
-    return false; // Prevent default
+    e.preventDefault();
 }
 
-function touchEnded() {
-    if (touches.length < 2) {
+function handleTouchEnd(e) {
+    if (e.touches.length < 2) {
         initialPinchDistance = 0;
         initialScale = canvasScale;
     }
     lastDragPoint = null;
-    return false; // Prevent default
+    e.preventDefault();
 }
 
 function isMouseInsideCanvas() {
