@@ -176,3 +176,27 @@ function isMobileDevice() {
     return /Mobi|Android/i.test(navigator.userAgent);
 }
 
+document.getElementById('start-button').addEventListener('click', () => {
+    timer = true;
+    loop(); // Starts p5.js draw loop
+});
+
+document.getElementById('pause-button').addEventListener('click', () => {
+    timer = false;
+    noLoop(); // Stops p5.js draw loop
+});
+
+document.getElementById('stop-button').addEventListener('click', () => {
+    timer = false;
+    pathPoints = [{ x: 400, y: 400, isBacktrack: false }];
+    currentLocation = { x: 400, y: 400 };
+    translateX = 0;
+    translateY = 0;
+    backtrackStack = [];
+    noLoop();
+    redraw(); // Forces a redraw of the canvas
+});
+
+document.getElementById('follow-walk').addEventListener('change', (e) => {
+    followWalk = e.target.checked;
+});
