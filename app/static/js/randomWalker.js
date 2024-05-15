@@ -194,35 +194,3 @@ document.getElementById('stop-button').addEventListener('click', () => {
 document.getElementById('follow-walk').addEventListener('change', (e) => {
     followWalk = e.target.checked;
 });
-
-document.getElementById('shape-selector').addEventListener('change', (e) => {
-    let selectedShape = e.target.value;
-    switch (selectedShape) {
-        case 'rectangle':
-            // Handle rectangle shape
-            break;
-        case 'circle':
-            // Handle circle shape
-            break;
-        case 'triangle':
-            // Handle triangle shape
-            break;
-    }
-});
-
-document.getElementById('fractal-walk').addEventListener('change', (e) => {
-    useFractalStepSize = e.target.checked;
-});
-
-document.getElementById('fractal-steps').addEventListener('input', (e) => {
-    fractalSteps = e.target.value;
-});
-
-document.getElementById('randomness-slider').addEventListener('input', (e) => {
-    randomnessLevel = e.target.value;
-});
-
-document.getElementById('speed-slider').addEventListener('input', (e) => {
-    let speed = e.target.value;
-    frameRate(map(speed, 0, 100, 1, 60));
-});
