@@ -18,7 +18,8 @@ let lineThickness = 2; // Default line thickness
 let canvas; // Reference to the canvas
 
 function setup() {
-    canvas = createCanvas(800, 800);
+    let canvasSize = isMobileDevice() ? 400 : 800;
+    canvas = createCanvas(canvasSize, canvasSize);
     canvas.parent('canvas-container'); // Attach the canvas to the div container
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
     frameRate(10); // Start with a default speed
@@ -37,7 +38,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.1, 2);
+        canvasScale = map(e.target.value, 0, 100, 0.01, 5); // Changed to 0.01 and 5 for extended zoom range
         redraw();
     });
 }
@@ -148,7 +149,7 @@ function mouseWheel(event) {
         } else {
             canvasScale *= zoomFactor;
         }
-        document.getElementById('zoom-slider').value = map(canvasScale, 0.1, 2, 0, 100); // Sync slider with zoom level
+        document.getElementById('zoom-slider').value = map(canvasScale, 0.01, 5, 0, 100); // Changed to 0.01 and 5 for extended zoom range
         return false; // Prevent default behavior
     }
 }
@@ -171,27 +172,7 @@ function isMouseInsideCanvas() {
     return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
 }
 
-document.getElementById('start-button').addEventListener('click', () => {
-    timer = true;
-    loop(); // Starts p5.js draw loop
-});
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
 
-document.getElementById('pause-button').addEventListener('click', () => {
-    timer = false;
-    noLoop(); // Stops p5.js draw loop
-});
-
-document.getElementById('stop-button').addEventListener('click', () => {
-    timer = false;
-    pathPoints = [{ x: 400, y: 400, isBacktrack: false }];
-    currentLocation = { x: 400, y: 400 };
-    translateX = 0;
-    translateY = 0;
-    backtrackStack = [];
-    noLoop();
-    redraw(); // Forces a redraw of the canvas
-});
-
-document.getElementById('follow-walk').addEventListener('change', (e) => {
-    followWalk = e.target.checked;
-});
