@@ -1,6 +1,6 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 0.4; // Renamed from 'scale' to 'canvasScale'
+let canvasScale = 0.6; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
 let baseStepSize = 50;
@@ -38,7 +38,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.07, 1);
+        canvasScale = map(e.target.value, 0, 100, 0.01, 5);
         redraw();
     });
 
@@ -182,16 +182,22 @@ function adjustView() {
 function mouseWheel(event) {
     if (isMouseInsideCanvas()) {
         let zoomFactor = 1.1;
-        if (event.delta > 0) {
-            canvasScale /= zoomFactor;
-        } else {
-            canvasScale *= zoomFactor;
-        }
-        // Update the zoom slider to reflect the current canvasScale
-        let zoomSlider = document.getElementById('zoom-slider');
-        zoomSlider.value = map(canvasScale, 0.01, 5, 0, 100);
+        let zoomAmount = (event.delta > 0) ? 1 / zoomFactor : zoomFactor;
+        zoomAtMousePosition(zoomAmount, mouseX, mouseY);
         return false; // Prevent default behavior
     }
+}
+
+function zoomAtMousePosition(zoomAmount, x, y) {
+    let wx = (x - translateX) / (width * canvasScale);
+    let wy = (y - translateY) / (height * canvasScale);
+    canvasScale *= zoomAmount;
+    translateX = x - wx * (width * canvasScale);
+    translateY = y - wy * (height * canvasScale);
+
+    // Update the zoom slider to reflect the current canvasScale
+    let zoomSlider = document.getElementById('zoom-slider');
+    zoomSlider.value = map(canvasScale, 0.05, 0.8, 0, 100);
 }
 
 function mousePressed() {
@@ -203,7 +209,7 @@ function mousePressed() {
 function mouseDragged() {
     if (lastDragPoint && isMouseInsideCanvas()) {
         translateX += mouseX - lastDragPoint.x;
-        translateY += mouseX - lastDragPoint.y;
+        translateY += mouseY - lastDragPoint.y;
         lastDragPoint = { x: mouseX, y: mouseY };
     }
 }
