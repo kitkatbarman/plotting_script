@@ -17,9 +17,9 @@ function setup() {
     console.log("Canvas setup completed."); // Debugging step
 
     // Prevent default touch actions to enable custom pinch and pan handling
-    canvas.elt.addEventListener('touchstart', handleTouchStart, { passive: false });
-    canvas.elt.addEventListener('touchmove', handleTouchMove, { passive: false });
-    canvas.elt.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.elt.addEventListener('touchstart', touchStarted, { passive: false });
+    canvas.elt.addEventListener('touchmove', touchMoved, { passive: false });
+    canvas.elt.addEventListener('touchend', touchEnded, { passive: false });
 
     // Add mouse wheel event for desktop zooming
     canvas.elt.addEventListener('wheel', handleMouseWheel, { passive: false });
@@ -44,7 +44,7 @@ function draw() {
     console.log("Drawing frame."); // Debugging step
 }
 
-function handleTouchStart(e) {
+function touchStarted(e) {
     if (e.touches.length === 2) {
         isPinching = true;
         initialDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
@@ -56,7 +56,7 @@ function handleTouchStart(e) {
     return false; // Prevent default
 }
 
-function handleTouchMove(e) {
+function touchMoved(e) {
     if (isPinching && e.touches.length === 2) {
         let currentDistance = dist(e.touches[0].clientX, e.touches[0].clientY, e.touches[1].clientX, e.touches[1].clientY);
         scaleFactor = initialScale * (currentDistance / initialDistance);
@@ -73,7 +73,7 @@ function handleTouchMove(e) {
     return false; // Prevent default
 }
 
-function handleTouchEnd(e) {
+function touchEnded(e) {
     if (e.touches.length < 2) {
         isPinching = false;
     }
