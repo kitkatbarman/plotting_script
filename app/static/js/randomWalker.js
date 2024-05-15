@@ -1,110 +1,222 @@
-console.log("randomWalker.js loaded successfully.");
-
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let scaleFactor = 1.0;
+let canvasScale = 1.0; // Renamed from 'scale' to 'canvasScale'
 let translateX = 0;
 let translateY = 0;
-let timer = false; // Initialize timer variable
-let isPinching = false;
-let initialDistance = 0;
-let initialScale = 1.0;
-let lastTouches = [];
+let baseStepSize = 50;
+let useFractalStepSize = false;
+let fractalSteps = 30;
+let fractalStepCounter = 0;
+let stepCount = 0;
+let barriers = [];
+let randomnessLevel = 0;
+let timer = false;
+let followWalk = false;
+let backtrackStack = [];
+let lastDragPoint = null;
 let lineThickness = 2; // Default line thickness
+let canvas; // Reference to the canvas
 
 function setup() {
-    let canvas = createCanvas(800, 800);
-    canvas.parent('canvas-container');
-    pathPoints.push({ x: currentLocation.x, y: currentLocation.y });
+    canvas = createCanvas(800, 800);
+    canvas.parent('canvas-container'); // Attach the canvas to the div container
+    pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
     frameRate(10); // Start with a default speed
-    console.log("Canvas setup completed."); // Debugging step
+    noLoop(); // Start with animation stopped
+
+    // Line thickness slider event listener
+    document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
+        lineThickness = e.target.value;
+    });
+
+    // Speed slider event listener
+    document.getElementById('speed-slider').addEventListener('input', (e) => {
+        let speed = e.target.value;
+        frameRate(map(speed, 0, 100, 1, 60));
+    });
 }
 
 function draw() {
     background(255);
     translate(translateX, translateY);
-    scale(scaleFactor); // Correct usage of scale function with scaleFactor
+    scale(canvasScale); // Use 'canvasScale' instead of 'scale'
     
-    stroke(0);
-    strokeWeight(lineThickness); // Use lineThickness variable
-
     for (let i = 1; i < pathPoints.length; i++) {
-        line(pathPoints[i - 1].x, pathPoints[i - 1].y, pathPoints[i].x, pathPoints[i].y);
+        let prevPoint = pathPoints[i - 1];
+        let currPoint = pathPoints[i];
+
+        // Check if the points are adjacent
+        if (isAdjacent(prevPoint, currPoint)) {
+            // Draw all lines in black
+            stroke(0);
+            strokeWeight(lineThickness); // Set line thickness based on slider value
+            line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
+        }
     }
 
     if (timer) {
-        moveRandomly(); // Assuming moveRandomly is defined
+        moveRandomly();
     }
-
-    console.log("Drawing frame."); // Debugging step
+    
+    adjustView();
 }
 
-function touchStarted() {
-    if (touches.length === 2) {
-        isPinching = true;
-        initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-        initialScale = scaleFactor;
+function moveRandomly() {
+    let stepSize = useFractalStepSize ? calculateFractalStepSize() : baseStepSize;
+    let moves = [
+        { x: 0, y: -stepSize },
+        { x: stepSize, y: 0 },
+        { x: 0, y: stepSize },
+        { x: -stepSize, y: 0 }
+    ];
+
+    let possibleMoves = moves.map(move => ({
+        x: currentLocation.x + move.x,
+        y: currentLocation.y + move.y
+    })).filter(point => !isInsideBarrier(point) && !pathPoints.some(p => p.x === point.x && p.y === point.y && !p.isBacktrack));
+
+    if (possibleMoves.length > 0) {
+        let chosenMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        currentLocation = chosenMove;
+        pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
+        stepCount++;
+        backtrackStack.push({ x: currentLocation.x, y: currentLocation.y }); // Push forward moves onto the backtrack stack
     } else {
-        isPinching = false;
-        lastTouches = [...touches];
+        handleBacktracking();
     }
-    return false; // Prevent default
 }
 
-function touchMoved() {
-    if (isPinching && touches.length === 2) {
-        let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
-        scaleFactor = initialScale * (currentDistance / initialDistance);
-    } else if (!isPinching && touches.length === 1 && lastTouches.length === 1) {
-        translateX += touches[0].x - lastTouches[0].x;
-        translateY += touches[0].y - lastTouches[0].y;
-        lastTouches = [...touches];
+function calculateFractalStepSize() {
+    if (fractalStepCounter === 0 || fractalStepCounter >= fractalSteps) {
+        fractalStepCounter = 0;
+        stepCount++;
+        return baseStepSize + Math.sin(stepCount / 2.0) * baseStepSize;
     }
-    return false; // Prevent default
+    fractalStepCounter++;
+    return baseStepSize;
 }
 
-function touchEnded() {
-    if (touches.length < 2) {
-        isPinching = false;
+function isInsideBarrier(point) {
+    for (let barrier of barriers) {
+        if (barrier.contains(point.x, point.y)) {
+            return true;
+        }
     }
-    lastTouches = [...touches];
-    return false; // Prevent default
+    return false;
+}
+
+function handleBacktracking() {
+    if (backtrackStack.length > 0) {
+        let lastMove = backtrackStack.pop();
+        currentLocation = { x: lastMove.x, y: lastMove.y };
+        pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: true });
+        stepCount++;
+    } else {
+        noLoop();
+        alert("No more possible moves and no backtrack options! The simulation has ended.");
+    }
+}
+
+function isAdjacent(point1, point2) {
+    let dx = Math.abs(point1.x - point2.x);
+    let dy = Math.abs(point1.y - point2.y);
+    return (dx === baseStepSize && dy === 0) || (dx === 0 && dy === baseStepSize);
+}
+
+function adjustView() {
+    if (followWalk) {
+        let centerX = width / 2;
+        let centerY = height / 2;
+        let targetX = centerX - currentLocation.x * canvasScale;
+        let targetY = centerY - currentLocation.y * canvasScale;
+        translateX += (targetX - translateX) * 0.1;
+        translateY += (targetY - translateY) * 0.1;
+    }
+}
+
+function mouseWheel(event) {
+    if (isMouseInsideCanvas()) {
+        let zoomFactor = 1.1;
+        if (event.delta > 0) {
+            canvasScale /= zoomFactor;
+        } else {
+            canvasScale *= zoomFactor;
+        }
+        return false; // Prevent default behavior
+    }
+}
+
+function mousePressed() {
+    if (isMouseInsideCanvas()) {
+        lastDragPoint = { x: mouseX, y: mouseY };
+    }
+}
+
+function mouseDragged() {
+    if (lastDragPoint && isMouseInsideCanvas()) {
+        translateX += mouseX - lastDragPoint.x;
+        translateY += mouseY - lastDragPoint.y;
+        lastDragPoint = { x: mouseX, y: mouseY };
+    }
+}
+
+function isMouseInsideCanvas() {
+    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
 }
 
 document.getElementById('start-button').addEventListener('click', () => {
     timer = true;
-    loop();
-    console.log("Start button clicked."); // Debugging step
+    loop(); // Starts p5.js draw loop
 });
 
 document.getElementById('pause-button').addEventListener('click', () => {
-    noLoop();
-    console.log("Pause button clicked."); // Debugging step
+    timer = false;
+    noLoop(); // Stops p5.js draw loop
 });
 
 document.getElementById('stop-button').addEventListener('click', () => {
     timer = false;
-    noLoop();
-    pathPoints = [{ x: 400, y: 400 }];
+    pathPoints = [{ x: 400, y: 400, isBacktrack: false }];
     currentLocation = { x: 400, y: 400 };
     translateX = 0;
     translateY = 0;
-    redraw();
-    console.log("Stop button clicked."); // Debugging step
+    backtrackStack = [];
+    noLoop();
+    redraw(); // Forces a redraw of the canvas
 });
 
 document.getElementById('follow-walk').addEventListener('change', (e) => {
     followWalk = e.target.checked;
-    console.log("Follow Walk changed to: " + followWalk); // Debugging step
+});
+
+document.getElementById('shape-selector').addEventListener('change', (e) => {
+    let selectedShape = e.target.value;
+    switch (selectedShape) {
+        case 'rectangle':
+            // Handle rectangle shape
+            break;
+        case 'circle':
+            // Handle circle shape
+            break;
+        case 'triangle':
+            // Handle triangle shape
+            break;
+    }
+});
+
+document.getElementById('fractal-walk').addEventListener('change', (e) => {
+    useFractalStepSize = e.target.checked;
+});
+
+document.getElementById('fractal-steps').addEventListener('input', (e) => {
+    fractalSteps = e.target.value;
+});
+
+document.getElementById('randomness-slider').addEventListener('input', (e) => {
+    randomnessLevel = e.target.value;
 });
 
 document.getElementById('speed-slider').addEventListener('input', (e) => {
     let speed = e.target.value;
     frameRate(map(speed, 0, 100, 1, 60));
-    console.log("Speed changed to: " + speed); // Debugging step
-});
-
-document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
-    lineThickness = e.target.value;
-    console.log("Line Thickness changed to: " + lineThickness); // Debugging step
 });
