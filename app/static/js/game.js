@@ -177,8 +177,8 @@ class Game {
             const dx = this.touchMoveX - this.touchCenterX;
             const dy = this.touchMoveY - this.touchCenterY;
 
-            this.x += dx * 0.1; // Adjust the multiplier for sensitivity
-            this.y += dy * 0.1;
+            this.x += dx * 1.1; // Adjust the multiplier for sensitivity
+            this.y += dy * 1.1;
 
             // Update the touch center to prevent jumping
             this.touchCenterX = this.touchMoveX;
