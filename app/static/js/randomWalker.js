@@ -1,6 +1,6 @@
 let pathPoints = [];
 let currentLocation = { x: 400, y: 400 };
-let canvasScale = 0.5; // Renamed from 'scale' to 'canvasScale'
+let canvasScale = 0.5;
 let translateX = 0;
 let translateY = 0;
 let baseStepSize = 50;
@@ -14,54 +14,54 @@ let timer = false;
 let followWalk = false;
 let backtrackStack = [];
 let lastDragPoint = null;
-let lineThickness = 2; // Default line thickness
-let canvas; // Reference to the canvas
+let lineThickness = 2;
+let canvas;
+let initialPinchDistance = 0;
+let initialScale = 1.0;
 
 function setup() {
     let canvasSize = isMobileDevice() ? 400 : 800;
     canvas = createCanvas(canvasSize, canvasSize);
-    canvas.parent('canvas-container'); // Attach the canvas to the div container
+    canvas.parent('canvas-container');
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
-    frameRate(10); // Start with a default speed
-    noLoop(); // Start with animation stopped
+    frameRate(10);
+    noLoop();
 
-    // Line thickness slider event listener
     document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
         lineThickness = e.target.value;
     });
 
-    // Speed slider event listener
     document.getElementById('speed-slider').addEventListener('input', (e) => {
         let speed = e.target.value;
         frameRate(map(speed, 0, 100, 1, 60));
     });
 
-    // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
         canvasScale = map(e.target.value, 0, 100, 0.01, 0.8);
         redraw();
     });
 
-    // Save button event listener
     document.getElementById('save-button').addEventListener('click', () => {
         saveDrawing();
     });
+
+    canvas.elt.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.elt.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.elt.addEventListener('touchend', handleTouchEnd, { passive: false });
 }
 
 function draw() {
     background(255);
     translate(translateX, translateY);
-    scale(canvasScale); // Use 'canvasScale' instead of 'scale'
+    scale(canvasScale);
 
     for (let i = 1; i < pathPoints.length; i++) {
         let prevPoint = pathPoints[i - 1];
         let currPoint = pathPoints[i];
 
-        // Check if the points are adjacent
         if (isAdjacent(prevPoint, currPoint)) {
-            // Draw all lines in black
             stroke(0);
-            strokeWeight(lineThickness); // Set line thickness based on slider value
+            strokeWeight(lineThickness);
             line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
         }
     }
@@ -91,7 +91,7 @@ function saveDrawing() {
     tempCanvas.translate(marginX - minX, marginY - minY);
 
     tempCanvas.background(255);
-    tempCanvas.scale(1); // No need for canvasScale here
+    tempCanvas.scale(1);
     for (let i = 1; i < pathPoints.length; i++) {
         let prevPoint = pathPoints[i - 1];
         let currPoint = pathPoints[i];
@@ -103,20 +103,7 @@ function saveDrawing() {
         }
     }
 
-    tempCanvas.loadPixels();
-    let pixelData = tempCanvas.pixels;
-    let nonEmptyPixels = 0;
-    for (let i = 0; i < pixelData.length; i += 4) {
-        if (pixelData[i] !== 255 || pixelData[i + 1] !== 255 || pixelData[i + 2] !== 255) {
-            nonEmptyPixels++;
-        }
-    }
-
-    if (nonEmptyPixels > 0) {
-        save(tempCanvas, 'random_walk.png');
-    } else {
-        alert("The canvas is empty or too large to save. Please try again with a smaller drawing.");
-    }
+    save(tempCanvas, 'random_walk.png');
 }
 
 function moveRandomly() {
@@ -138,7 +125,7 @@ function moveRandomly() {
         currentLocation = chosenMove;
         pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
         stepCount++;
-        backtrackStack.push({ x: currentLocation.x, y: currentLocation.y }); // Push forward moves onto the backtrack stack
+        backtrackStack.push({ x: currentLocation.x, y: currentLocation.y });
     } else {
         handleBacktracking();
     }
@@ -197,7 +184,7 @@ function mouseWheel(event) {
         let zoomFactor = 1.1;
         let zoomAmount = (event.delta > 0) ? 1 / zoomFactor : zoomFactor;
         zoomAtMousePosition(zoomAmount, mouseX, mouseY);
-        return false; // Prevent default behavior
+        return false;
     }
 }
 
@@ -208,9 +195,8 @@ function zoomAtMousePosition(zoomAmount, x, y) {
     translateX = x - wx * (width * canvasScale);
     translateY = y - wy * (height * canvasScale);
 
-    // Update the zoom slider to reflect the current canvasScale
     let zoomSlider = document.getElementById('zoom-slider');
-    zoomSlider.value = map(canvasScale, 0.01, 0.8, 0, 100);
+    zoomSlider.value = map(canvasScale, 0.005, 0.6, 0, 100);
 }
 
 function mousePressed() {
@@ -222,7 +208,7 @@ function mousePressed() {
 function mouseDragged() {
     if (lastDragPoint && isMouseInsideCanvas()) {
         translateX += mouseX - lastDragPoint.x;
-        translateY += mouseY - lastDragPoint.y;
+        translateY += mouseX - lastDragPoint.x;
         lastDragPoint = { x: mouseX, y: mouseY };
     }
 }
@@ -231,18 +217,38 @@ function isMouseInsideCanvas() {
     return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
 }
 
-function isMobileDevice() {
-    return /Mobi|Android/i.test(navigator.userAgent);
+function handleTouchStart(event) {
+    if (event.touches.length === 2) {
+        initialPinchDistance = dist(event.touches[0].clientX, event.touches[0].clientY, event.touches[1].clientX, event.touches[1].clientY);
+        initialScale = canvasScale;
+    }
+}
+
+function handleTouchMove(event) {
+    if (event.touches.length === 2) {
+        let currentPinchDistance = dist(event.touches[0].clientX, event.touches[0].clientY, event.touches[1].clientX, event.touches[1].clientY);
+        let scaleChange = currentPinchDistance / initialPinchDistance;
+        canvasScale = initialScale * scaleChange;
+        event.preventDefault();
+        redraw();
+    }
+}
+
+function handleTouchEnd(event) {
+    if (event.touches.length < 2) {
+        initialPinchDistance = 0;
+        initialScale = canvasScale;
+    }
 }
 
 document.getElementById('start-button').addEventListener('click', () => {
     timer = true;
-    loop(); // Starts p5.js draw loop
+    loop();
 });
 
 document.getElementById('pause-button').addEventListener('click', () => {
     timer = false;
-    noLoop(); // Stops p5.js draw loop
+    noLoop();
 });
 
 document.getElementById('stop-button').addEventListener('click', () => {
@@ -253,9 +259,19 @@ document.getElementById('stop-button').addEventListener('click', () => {
     translateY = 0;
     backtrackStack = [];
     noLoop();
-    redraw(); // Forces a redraw of the canvas
+    redraw();
 });
 
 document.getElementById('follow-walk').addEventListener('change', (e) => {
     followWalk = e.target.checked;
 });
+
+document.getElementById('zoom-slider').addEventListener('input', (e) => {
+    canvasScale = map(e.target.value, 0, 100, 0.005, 0.6);
+    redraw();
+});
+
+function isMobileDevice() {
+    return /Mobi|Android/i.test(navigator.userAgent);
+}
+
