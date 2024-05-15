@@ -10,6 +10,7 @@ let isPinching = false;
 let initialDistance = 0;
 let initialScale = 1.0;
 let lastTouches = [];
+let lineThickness = 2; // Default line thickness
 
 function setup() {
     let canvas = createCanvas(800, 800);
@@ -22,13 +23,10 @@ function setup() {
 function draw() {
     background(255);
     translate(translateX, translateY);
-
-    // Check if scale is a function
-    console.log("Type of scale:", typeof scale); // Debugging step
-    scale(scaleFactor); // Use the p5.js scale function
-
+    scale(scaleFactor); // Correct usage of scale function with scaleFactor
+    
     stroke(0);
-    strokeWeight(document.getElementById('line-thickness-slider').value);
+    strokeWeight(lineThickness); // Use lineThickness variable
 
     for (let i = 1; i < pathPoints.length; i++) {
         line(pathPoints[i - 1].x, pathPoints[i - 1].y, pathPoints[i].x, pathPoints[i].y);
@@ -107,6 +105,6 @@ document.getElementById('speed-slider').addEventListener('input', (e) => {
 });
 
 document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
-    let lineThickness = e.target.value;
+    lineThickness = e.target.value;
     console.log("Line Thickness changed to: " + lineThickness); // Debugging step
 });
