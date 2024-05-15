@@ -36,6 +36,35 @@ function draw() {
     console.log("Drawing frame."); // Debugging step
 }
 
+function touchStarted() {
+    if (touches.length === 2) {
+        isPinching = true;
+        initialDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+        initialScale = scaleFactor;
+    } else {
+        isPinching = false;
+        lastTouches = [...touches];
+    }
+}
+
+function touchMoved() {
+    if (isPinching && touches.length === 2) {
+        let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+        scaleFactor = initialScale * (currentDistance / initialDistance);
+    } else if (!isPinching && touches.length === 1 && lastTouches.length === 1) {
+        translateX += touches[0].x - lastTouches[0].x;
+        translateY += touches[0].y - lastTouches[0].y;
+        lastTouches = [...touches];
+    }
+}
+
+function touchEnded() {
+    if (touches.length < 2) {
+        isPinching = false;
+    }
+    lastTouches = [...touches];
+}
+
 document.getElementById('start-button').addEventListener('click', () => {
     timer = true;
     loop();
@@ -51,7 +80,7 @@ document.getElementById('stop-button').addEventListener('click', () => {
     timer = false;
     noLoop();
     pathPoints = [{ x: 400, y: 400 }];
-    currentLocation = { x: 400, y: 400 };
+    currentLocation = { x: 400, y: 400 }];
     translateX = 0;
     translateY = 0;
     redraw();
