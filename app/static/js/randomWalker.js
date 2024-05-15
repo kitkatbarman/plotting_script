@@ -207,38 +207,51 @@ function mousePressed() {
 
 function mouseDragged() {
     if (lastDragPoint && isMouseInsideCanvas()) {
-        translateX += mouseX - lastDragPoint.x;
-        translateY += mouseX - lastDragPoint.x;
+        let dx = mouseX - lastDragPoint.x;
+        let dy = mouseY - lastDragPoint.y;
+        translateX += dx;
+        translateY += dy;
         lastDragPoint = { x: mouseX, y: mouseY };
     }
 }
 
-function isMouseInsideCanvas() {
-    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
-}
-
-function handleTouchStart(event) {
-    if (event.touches.length === 2) {
-        initialPinchDistance = dist(event.touches[0].clientX, event.touches[0].clientY, event.touches[1].clientX, event.touches[1].clientY);
+function touchStarted() {
+    if (touches.length === 1) {
+        lastDragPoint = { x: touches[0].clientX, y: touches[0].clientY };
+    } else if (touches.length === 2) {
+        initialPinchDistance = dist(touches[0].clientX, touches[0].clientY, touches[1].clientX, touches[1].clientY);
         initialScale = canvasScale;
     }
+    return false; // Prevent default
 }
 
-function handleTouchMove(event) {
-    if (event.touches.length === 2) {
-        let currentPinchDistance = dist(event.touches[0].clientX, event.touches[0].clientY, event.touches[1].clientX, event.touches[1].clientY);
+function touchMoved() {
+    if (touches.length === 1 && lastDragPoint) {
+        let dx = touches[0].clientX - lastDragPoint.x;
+        let dy = touches[0].clientY - lastDragPoint.y;
+        translateX += dx;
+        translateY += dy;
+        lastDragPoint = { x: touches[0].clientX, y: touches[0].clientY };
+    } else if (touches.length === 2) {
+        let currentPinchDistance = dist(touches[0].clientX, touches[0].clientY, touches[1].clientX, touches[1].clientY);
         let scaleChange = currentPinchDistance / initialPinchDistance;
         canvasScale = initialScale * scaleChange;
-        event.preventDefault();
-        redraw();
+        return false;
     }
+    return false; // Prevent default
 }
 
-function handleTouchEnd(event) {
-    if (event.touches.length < 2) {
+function touchEnded() {
+    if (touches.length < 2) {
         initialPinchDistance = 0;
         initialScale = canvasScale;
     }
+    lastDragPoint = null;
+    return false; // Prevent default
+}
+
+function isMouseInsideCanvas() {
+    return mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height;
 }
 
 document.getElementById('start-button').addEventListener('click', () => {
@@ -274,4 +287,3 @@ document.getElementById('zoom-slider').addEventListener('input', (e) => {
 function isMobileDevice() {
     return /Mobi|Android/i.test(navigator.userAgent);
 }
-
