@@ -5,7 +5,7 @@ const concentrationCtx = concentrationCanvas.getContext('2d');
 
 let particles = [];
 let animationId;
-let concentrationPlotId;  // Ensure this is defined
+let concentrationPlotId;
 let isRunning = false;
 let temperature = 5;  // Default temperature
 let numGas1 = 500;    // Default number of Gas 1 particles
@@ -24,7 +24,7 @@ let gridConcentrations2 = new Array(numBins).fill(0);
 
 // Apply an exponential scaling function to adjust velocity based on temperature
 function scaleTemperature(temp) {
-    return Math.pow(temp, 2) * 0.1; // Further reduced scaling factor
+    return Math.pow(temp, 2) * 0.1; // Adjusted scaling factor
 }
 
 function createParticles() {
@@ -172,36 +172,57 @@ function drawConcentrationPlot() {
     const smoothedConcentrations1 = smoothData(gridConcentrations1, 0.1);
     const smoothedConcentrations2 = smoothData(gridConcentrations2, 0.1);
 
+    // Draw tick marks and labels
+    const numTicks = 10;
+    const tickSpacing = concentrationCanvas.width / numTicks;
+    const tickHeight = 5;
+
+    // X-axis ticks and labels
+    for (let i = 0; i <= numTicks; i++) {
+        const x = i * tickSpacing;
+        concentrationCtx.beginPath();
+        concentrationCtx.moveTo(x, concentrationCanvas.height);
+        concentrationCtx.lineTo(x, concentrationCanvas.height - tickHeight);
+        concentrationCtx.stroke();
+        concentrationCtx.fillText((i / numTicks).toFixed(1), x, concentrationCanvas.height - tickHeight - 5);
+    }
+
+    // Y-axis ticks and labels
+    for (let i = 0; i <= numTicks; i++) {
+        const y = i * (concentrationCanvas.height / numTicks);
+        concentrationCtx.beginPath();
+        concentrationCtx.moveTo(0, concentrationCanvas.height - y);
+        concentrationCtx.lineTo(tickHeight, concentrationCanvas.height - y);
+        concentrationCtx.stroke();
+        concentrationCtx.fillText((maxConcentration * i / numTicks).toFixed(1), tickHeight + 5, concentrationCanvas.height - y + 3);
+    }
+
     // Draw red concentration line, skipping the first and last bins
     concentrationCtx.strokeStyle = 'red';
     concentrationCtx.beginPath();
-    smoothedConcentrations1.forEach((concentration, index) => {
-        if (index > 0 && index < numBins - 1) {
-            const x = index * binWidth;
-            const y = concentrationCanvas.height - (concentration * scale);
-            if (index === 1) {
-                concentrationCtx.moveTo(x, y);
-            } else {
-                concentrationCtx.lineTo(x, y);
-            }
+    for (let index = 1; index < numBins - 1; index++) {
+        const x = index * binWidth;
+        const y = concentrationCanvas.height - (smoothedConcentrations1[index] * scale);
+        if (index === 1) {
+            concentrationCtx.moveTo(x, y);
+        } else {
+            concentrationCtx.lineTo(x, y);
         }
-    });
+    }
     concentrationCtx.stroke();
 
     // Draw blue concentration line, skipping the first and last bins
     concentrationCtx.strokeStyle = 'blue';
     concentrationCtx.beginPath();
-    smoothedConcentrations2.forEach((concentration, index) => {
-        if (index > 0 && index < numBins - 1) {
-            const x = index * binWidth;
-            const y = concentrationCanvas.height - (concentration * scale);
-            if (index === 1) {
-                concentrationCtx.moveTo(x, y);
-            } else {
-                concentrationCtx.lineTo(x, y);
-            }
+    for (let index = 1; index < numBins - 1; index++) {
+        const x = index * binWidth;
+        const y = concentrationCanvas.height - (smoothedConcentrations2[index] * scale);
+        if (index === 1) {
+            concentrationCtx.moveTo(x, y);
+        } else {
+            concentrationCtx.lineTo(x, y);
         }
-    });
+    }
     concentrationCtx.stroke();
 }
 
