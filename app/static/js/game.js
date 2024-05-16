@@ -1,4 +1,3 @@
-// static/js/game.js
 class Bullet {
     constructor(x, y, xSpeed, ySpeed) {
         this.x = x;
@@ -195,12 +194,7 @@ class Game {
         clearInterval(this.bulletTimer);
         clearInterval(this.difficultyTimer);
         this.updateHighScore();
-        alert(`Game Over!\nYour Score: ${this.currentScore}\nHigh Score: ${this.highScore}`);
-        if (confirm('Replay?')) {
-            this.restartGame();
-        } else {
-            window.location.href = '/';
-        }
+        checkIfHighScore(this.currentScore);
     }
 
     increaseDifficulty() {
@@ -232,21 +226,6 @@ class Game {
         if (this.currentScore > this.highScore) {
             this.highScore = this.currentScore;
         }
-    }
-
-    restartGame() {
-        this.spawnDelay = 1000;
-        this.speedIncreaseFactor = 1.0;
-        clearInterval(this.bulletTimer);
-        this.bulletTimer = setInterval(() => this.spawnBullet(), this.spawnDelay);
-        this.x = 300;
-        this.y = 300;
-        this.bullets = [];
-        this.gameOver = false;
-        this.currentScore = 0;
-        this.keyStates = {};
-        this.moveTimer = setInterval(() => this.update(), 10);
-        this.difficultyTimer = setInterval(() => this.increaseDifficulty(), this.difficultyIncreaseInterval);
     }
 }
 
