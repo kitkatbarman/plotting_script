@@ -55,8 +55,8 @@ document.addEventListener("DOMContentLoaded", function() {
             letterObj.y += letterObj.dy;
 
             // Bounce off the edges
-            const textWidth = 8; // Approximate half-width of the letter
-            const textHeight = 8; // Approximate half-height of the letter
+            const textWidth = 6; // Approximate half-width of the letter
+            const textHeight = 6; // Approximate half-height of the letter
             
             if (letterObj.x - textWidth < box.xStart || letterObj.x + textWidth > box.xStart + box.boxWidth) {
                 letterObj.dx = -letterObj.dx;
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const dx = letterA.x - letterB.x;
                 const dy = letterA.y - letterB.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                const minDistance = 20; // Approximate diameter of a letter
+                const minDistance = 15; // Approximate diameter of a letter
 
                 if (distance < minDistance) {
                     // Simple elastic collision response
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function update() {
         // Clear the canvas with a slight transparency for the trail effect
-        ctx.fillStyle = "rgba(255, 255, 255, 0.15)";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Redraw the empty box
