@@ -11,3 +11,5 @@ mysqlclient==2.1.1
 SQLAlchemy==1.4.44
 Werkzeug==2.2.2
 zipp==3.11.0
+matplotlib==3.8.4
+numpy==1.24.3
