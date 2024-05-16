@@ -11,7 +11,8 @@ from .routes.randomWalk import randomWalk
 from .routes.bullet_dodge import bullet_dodge
 from .routes.diffusion_simulation import diffusion_simulation  # Import new blueprint
 
-DB_PATH = 'game_scores.db'
+DB_PATH = '/home/ubuntu/plotting_script/game_scores.db'
+
 
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
