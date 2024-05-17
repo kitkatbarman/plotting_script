@@ -13,3 +13,5 @@ Werkzeug==2.2.2
 zipp==3.11.0
 matplotlib==3.8.4
 numpy==1.24.3
+gunicorn=22.0.0
+better_profanity=0.7.0
