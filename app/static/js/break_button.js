@@ -12,7 +12,8 @@ function lightenButton() {
     setTimeout(() => button.classList.remove('pressed'), 100);
 
     // Calculate the probability of breaking
-    let probability = buttonPresses / 20;
+    let lambda = Math.log(2) / 500; // Sets the breaking probability to 0.5 at 500 presses
+    let probability = 1 - Math.exp(-lambda * buttonPresses);
     if (Math.random() < probability && buttonPresses > 1) {
         button.disabled = true;
         button.style.backgroundColor = 'grey';  // Grey out the button when broken
@@ -27,7 +28,7 @@ function lightenButton() {
     } else {
         // Lighten the button color only if not broken
         if (buttonPresses > 1) {
-            let currentColor = window.getComputedStyle(button).backgroundColor;
+            let currentColor = button.style.backgroundColor;
             let newColor = lightenColor(currentColor);
             button.style.backgroundColor = newColor;
         }
@@ -42,10 +43,9 @@ function lightenButton() {
 }
 
 function lightenColor(color) {
-    // Parse the RGB color and lighten it
-    const colorValues = color.match(/\d+/g).map(Number);
-    const lightenedColor = colorValues.map(value => Math.min(value + 20, 255));
-    return `rgb(${lightenedColor.join(',')})`;
+    // Implement your code to lighten the color here
+    // This is just a placeholder
+    return 'lightgrey';
 }
 
 function resetButton() {
@@ -55,7 +55,7 @@ function resetButton() {
     button.textContent = 'Break Me';
     button.id = 'break-button';
     button.onclick = lightenButton;
-    button.style.backgroundColor = '#ff6f61';  // Reset the button color
+    button.style.backgroundColor = '';  // Reset the button color
     let parent = document.getElementById('button-container');
     parent.replaceChild(button, document.getElementById('break-button'));
     let tryAgainButton = document.getElementById('try-again-button');
@@ -87,8 +87,8 @@ function createFloatingBoxes() {
 }
 
 function animateBox(box) {
-    let xSpeed = Math.random() * 0.5 + 1;
-    let ySpeed = Math.random() * 0.5 + 1;
+    let xSpeed = Math.random() * 2 + 1;
+    let ySpeed = Math.random() * 2 + 1;
     let xDirection = Math.random() < 0.5 ? 1 : -1;
     let yDirection = Math.random() < 0.5 ? 1 : -1;
 
