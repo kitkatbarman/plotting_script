@@ -3,101 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click a Button</title>
+    <title>Click the Collectable Item</title>
     <style>
-        /* Style the random button */
-        #randomButton {
-            position: absolute;
-            top: 50px;
-            left: 50px;
-            width: 200px; /* Set the width */
-            height: 100px; /* Set the height */
-            font-size: 24px; /* Adjust the font size */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            font-family: Arial, sans-serif;
+            overflow: hidden;
         }
-
-        #info {
+        .game-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .collectable-item {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ff6f61;
+            cursor: pointer;
+            opacity: 1;
+        }
+        .collectable-item:hover {
+            background-color: #ff5a4d;
+        }
+        #try-again-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
             font-size: 18px;
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #try-again-button:hover {
+            background-color: #ff5a4d;
+        }
+        #game-area {
+            position: relative;
+            width: 80vw;
+            height: 80vh;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Click a Button</h1>
-
-    <!-- Random button -->
-    <button id="randomButton" onclick="moveButton()">Click Me!</button>
-
-    <!-- Info section -->
-    <div id="info">
-        <p>Time left: <span id="timer">10</span> seconds</p>
-        <p>Clicks: <span id="clicks">0</span></p>
-        <p>Previous Record: <span id="previousRecord">0</span></p>
+    <div class="game-container">
+        <h1>Click the Collectable Item</h1>
+        <p>Score: <span id="score">0</span></p>
+        <p>Time left: <span id="timer">60</span> seconds</p>
+        <div id="game-area"></div>
+        <button id="try-again-button" onclick="resetGame()">Try Again?</button>
     </div>
-
-    <script>
-        var timer = 10; // Initial timer value in seconds
-        var clicks = 0; // Initialize click counter
-        var previousRecord = 0; // Initialize previous record
-        var intervalId; // Variable to hold the interval ID
-    
-        // Function to update the countdown timer
-        function updateTimer() {
-            timer--;
-            document.getElementById('timer').textContent = timer;
-            if (timer <= 0) {
-                clearInterval(intervalId); // Stop the countdown when timer reaches 0
-                document.getElementById('randomButton').disabled = true; // Disable the button
-                document.getElementById('randomButton').style.display = 'none'; // Hide the button
-                // Ensure only one try again button is added
-                if (!document.getElementById('tryAgainButton')) {
-                    var tryAgainButton = document.createElement('button');
-                    tryAgainButton.textContent = 'Try Again';
-                    tryAgainButton.id = 'tryAgainButton'; // Add an ID to the try again button
-                    tryAgainButton.onclick = resetGame;
-                    document.body.appendChild(tryAgainButton);
-                }
-                // Update previous record if needed
-                if (clicks > previousRecord) {
-                    previousRecord = clicks;
-                    document.getElementById('previousRecord').textContent = previousRecord;
-                }
-            }
-        }
-    
-        // Function to move the button randomly
-        function moveButton() {
-            clicks++;
-            document.getElementById('clicks').textContent = clicks;
-            var button = document.getElementById('randomButton');
-            var maxX = window.innerWidth - button.offsetWidth;
-            var maxY = window.innerHeight - button.offsetHeight;
-            var randomX = Math.floor(Math.random() * maxX);
-            var randomY = Math.floor(Math.random() * maxY);
-            button.style.left = randomX + 'px';
-            button.style.top = randomY + 'px';
-        }
-    
-        // Function to reset the game
-        function resetGame() {
-            timer = 10; // Reset the timer
-            clicks = 0; // Reset the click counter
-            document.getElementById('timer').textContent = timer;
-            document.getElementById('clicks').textContent = clicks;
-            document.getElementById('randomButton').disabled = false;
-            document.getElementById('randomButton').style.display = 'block';
-            var tryAgainButton = document.getElementById('tryAgainButton');
-            if (tryAgainButton) {
-                tryAgainButton.remove(); // Remove the try again button correctly
-            }
-            intervalId = setInterval(updateTimer, 1000); // Restart the timer
-            moveButton(); // Reset the position of the random button
-        }
-    
-        // Start the countdown timer
-        intervalId = setInterval(updateTimer, 1000);
-    </script>
-    
+    <script src="/static/js/click_button.js"></script>
 </body>
 </html>

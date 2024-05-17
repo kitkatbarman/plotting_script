@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import sqlite3
 from better_profanity import profanity
 from datetime import datetime
@@ -9,10 +9,11 @@ from .routes.click_button import click_button
 from .routes.break_button import break_button
 from .routes.randomWalk import randomWalk
 from .routes.bullet_dodge import bullet_dodge
-from .routes.diffusion_simulation import diffusion_simulation  # Import new blueprint
+from .routes.diffusion_simulation import diffusion_simulation
+from .routes.circles import circles  # Import the new blueprint
 
-DB_PATH = '/home/ubuntu/plotting_script/game_scores.db'
-# DB_PATH = 'game_scores.db'
+# DB_PATH = '/home/ubuntu/plotting_script/game_scores.db'
+DB_PATH = 'game_scores.db'
 
 
 def init_db():
@@ -45,7 +46,8 @@ def create_app():
     app.register_blueprint(break_button)
     app.register_blueprint(randomWalk)
     app.register_blueprint(bullet_dodge)
-    app.register_blueprint(diffusion_simulation)  # Register new blueprint
+    app.register_blueprint(diffusion_simulation)
+    app.register_blueprint(circles)  # Register the new blueprint
 
     logging.basicConfig(level=logging.DEBUG)
 
@@ -62,17 +64,14 @@ def create_app():
             with sqlite3.connect(DB_PATH) as conn:
                 cur = conn.cursor()
                 
-                # Insert into all_scores table
                 cur.execute("INSERT INTO all_scores (score) VALUES (?)", (score,))
                 
-                # Check if the score qualifies as a high score
                 cur.execute("SELECT score FROM high_scores ORDER BY score DESC LIMIT 10")
                 high_scores = cur.fetchall()
                 
                 if len(high_scores) < 10 or score > high_scores[-1][0]:
                     cur.execute("INSERT INTO high_scores (name, score) VALUES (?, ?)", (name, score))
                     
-                    # Ensure only top 10 scores are kept
                     cur.execute("DELETE FROM high_scores WHERE id NOT IN (SELECT id FROM high_scores ORDER BY score DESC LIMIT 10)")
 
                 conn.commit()
