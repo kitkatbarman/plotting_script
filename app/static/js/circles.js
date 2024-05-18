@@ -11,6 +11,8 @@ let spawnInterval = difficulty.spawnInterval;
 let growTime = difficulty.growTime;
 let fadeTime = difficulty.fadeTime;
 let scoreScaler = difficulty.scoreScaler;
+let MIN_CIRCLE_SIZE = difficulty.MIN_CIRCLE_SIZE;
+let MAX_CIRCLE_SIZE = difficulty.MAX_CIRCLE_SIZE;
 
 class Circle {
     constructor(x, y, maxSize, growTime, fadeTime) {
