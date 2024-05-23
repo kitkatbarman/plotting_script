@@ -296,7 +296,7 @@ function handleTouchMove(e) {
 
         // Update the zoom slider to reflect the current canvasScale
         let zoomSlider = document.getElementById('zoom-slider');
-        zoomSlider.value = map(canvasScale, 0.01, 2.0, 0, 100);
+        zoomSlider.value = map(canvasScale, 0.001, 1.5, 0, 100);
     }
     e.preventDefault();
 }
