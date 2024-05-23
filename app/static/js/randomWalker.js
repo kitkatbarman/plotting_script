@@ -11,21 +11,27 @@ let stepCount = 0;
 let barriers = [];
 let randomnessLevel = 0;
 let timer = false;
-let followWalk = true;
+let followWalk = true; // Ensure this is true
 let backtrackStack = [];
 let lastDragPoint = null;
 let lineThickness = 2; // Default line thickness
 let canvas; // Reference to the canvas
 let initialPinchDistance;
 let initialScale;
+let colorScheme = 'rainbow'; // Default color scheme
+let backgroundColor = '#ffffff'; // Default background color
+let colorChangeRate = 50; // Default color change rate
 
 function setup() {
     let canvasSize = isMobileDevice() ? 400 : 800;
     canvas = createCanvas(canvasSize, canvasSize);
     canvas.parent('canvas-container'); // Attach the canvas to the div container
     pathPoints.push({ x: currentLocation.x, y: currentLocation.y, isBacktrack: false });
-    frameRate(10); // Start with a default speed
+    frameRate(12); // Start with a default speed
     noLoop(); // Start with animation stopped
+
+    // Initialize checkbox state
+    document.getElementById('follow-walk').checked = followWalk;
 
     // Line thickness slider event listener
     document.getElementById('line-thickness-slider').addEventListener('input', (e) => {
@@ -40,7 +46,7 @@ function setup() {
 
     // Zoom slider event listener
     document.getElementById('zoom-slider').addEventListener('input', (e) => {
-        canvasScale = map(e.target.value, 0, 100, 0.01, 2.0);
+        canvasScale = map(e.target.value, 0, 100, 0.0001, 2.0);
         redraw();
     });
 
@@ -49,13 +55,29 @@ function setup() {
         saveDrawing();
     });
 
+    // Color scheme selector event listener
+    document.getElementById('color-scheme-selector').addEventListener('change', (e) => {
+        colorScheme = e.target.value;
+    });
+
+    // Background color picker event listener
+    document.getElementById('background-color-picker').addEventListener('input', (e) => {
+        backgroundColor = e.target.value;
+        redraw(); // Redraw canvas to apply background color
+    });
+
+    // Color change rate slider event listener
+    document.getElementById('color-change-rate-slider').addEventListener('input', (e) => {
+        colorChangeRate = e.target.value;
+    });
+
     // Add touch event listeners
     canvas.elt.addEventListener('touchstart', handleTouchStart, false);
     canvas.elt.addEventListener('touchmove', handleTouchMove, false);
 }
 
 function draw() {
-    background(255);
+    background(backgroundColor);
     translate(translateX, translateY);
     scale(canvasScale); // Use 'canvasScale' instead of 'scale'
 
@@ -65,8 +87,8 @@ function draw() {
 
         // Check if the points are adjacent
         if (isAdjacent(prevPoint, currPoint)) {
-            // Draw all lines in black
-            stroke(0);
+            // Set stroke color based on color scheme
+            stroke(getStrokeColor(i));
             strokeWeight(lineThickness); // Set line thickness based on slider value
             line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
         }
@@ -77,6 +99,28 @@ function draw() {
     }
 
     adjustView();
+}
+
+function getStrokeColor(index) {
+    let adjustedIndex = Math.floor(index / (101 - colorChangeRate)); // Adjust color change rate
+    switch (colorScheme) {
+        case 'rainbow':
+            return color(`hsl(${adjustedIndex % 360}, 100%, 50%)`);
+        case 'monochrome':
+            return color(0);
+        case 'warm':
+            return color(`hsl(${(adjustedIndex % 60) + 10}, 100%, 50%)`); // Shades of red, orange, yellow
+        case 'cool':
+            return color(`hsl(${(adjustedIndex % 60) + 180}, 100%, 50%)`); // Shades of blue, cyan, green
+        case 'random':
+            return color(random(255), random(255), random(255));
+        case 'pastel':
+            return color(`hsl(${adjustedIndex % 360}, 100%, 80%)`);
+        case 'neon':
+            return color(`hsl(${adjustedIndex % 360}, 100%, 50%)`);
+        default:
+            return color(0);
+    }
 }
 
 function saveDrawing() {
@@ -96,14 +140,14 @@ function saveDrawing() {
     let tempCanvas = createGraphics(width + 2 * marginX, height + 2 * marginY);
     tempCanvas.translate(marginX - minX, marginY - minY);
 
-    tempCanvas.background(255);
+    tempCanvas.background(backgroundColor);
     tempCanvas.scale(1); // No need for canvasScale here
     for (let i = 1; i < pathPoints.length; i++) {
         let prevPoint = pathPoints[i - 1];
         let currPoint = pathPoints[i];
 
         if (isAdjacent(prevPoint, currPoint)) {
-            tempCanvas.stroke(0);
+            tempCanvas.stroke(getStrokeColor(i));
             tempCanvas.strokeWeight(lineThickness);
             tempCanvas.line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
         }
@@ -120,7 +164,7 @@ function saveDrawing() {
 
         let scaledCanvas = createGraphics(width + 2 * marginX, height + 2 * marginY);
         scaledCanvas.translate(marginX - minX * scaleFactor, marginY - minY * scaleFactor);
-        scaledCanvas.background(255);
+        scaledCanvas.background(backgroundColor);
         scaledCanvas.scale(scaleFactor);
 
         for (let i = 1; i < pathPoints.length; i++) {
@@ -128,7 +172,7 @@ function saveDrawing() {
             let currPoint = pathPoints[i];
 
             if (isAdjacent(prevPoint, currPoint)) {
-                scaledCanvas.stroke(0);
+                scaledCanvas.stroke(getStrokeColor(i));
                 scaledCanvas.strokeWeight(lineThickness * scaleFactor);
                 scaledCanvas.line(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
             }
@@ -139,9 +183,6 @@ function saveDrawing() {
         save(tempCanvas, 'random_walk.jpg');
     }
 }
-
-
-
 
 function moveRandomly() {
     let stepSize = useFractalStepSize ? calculateFractalStepSize() : baseStepSize;
@@ -296,7 +337,7 @@ function handleTouchMove(e) {
 
         // Update the zoom slider to reflect the current canvasScale
         let zoomSlider = document.getElementById('zoom-slider');
-        zoomSlider.value = map(canvasScale, 0.0001, 1.5, 0, 100);
+        zoomSlider.value = map(canvasScale, 0.0001, 2.0, 0, 100);
     }
     e.preventDefault();
 }

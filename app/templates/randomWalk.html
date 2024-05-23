@@ -101,6 +101,29 @@
         <div class="control-group">
             <label class="control-label" data-tippy-content="Follow the walk"><input type="checkbox" id="follow-walk" checked> Follow Walk</label>
         </div>
+        <div class="control-group">
+            <label class="control-label" data-tippy-content="Select color scheme">Color Scheme: 
+                <select id="color-scheme-selector">
+                    <option value="rainbow">Rainbow</option>
+                    <option value="monochrome">Monochrome</option>
+                    <option value="warm">Warm</option>
+                    <option value="cool">Cool</option>
+                    <option value="random">Random</option>
+                    <option value="pastel">Pastel</option>
+                    <option value="neon">Neon</option>
+                </select>
+            </label>
+        </div>
+        <div class="control-group">
+            <label class="control-label" data-tippy-content="Select background color">Background Color: 
+                <input type="color" id="background-color-picker" value="#ffffff">
+            </label>
+        </div>
+        <div class="control-group">
+            <label class="control-label" data-tippy-content="Adjust color change rate">Color Change Rate: 
+                <input type="range" id="color-change-rate-slider" min="1" max="100" value="50">
+            </label>
+        </div>
     </div>
     <div id="canvas-container">
         <!-- The canvas will be inserted here by p5.js -->
