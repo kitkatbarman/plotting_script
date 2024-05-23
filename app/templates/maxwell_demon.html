@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxwell's Demon</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+        #container {
+            position: relative;
+            width: 400px;  /* Fixed width */
+            height: 400px;  /* Fixed height */
+            border: 1px solid black;
+            overflow: hidden;
+        }
+        #simulationCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        #controls {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .slider-container {
+            margin: 5px 0;
+        }
+        .subscript {
+            font-size: 0.8em;
+            color: gray;
+        }
+        #victoryMessage {
+            display: none;
+            color: green;
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Maxwell's Demon</h1>
+    <p class="subscript">Can you become Maxwell's demon?</p>
+    <div id="container">
+        <canvas id="simulationCanvas" width="400" height="400"></canvas> <!-- Fixed size canvas -->
+    </div>
+    <div id="controls">
+        <button onclick="startSimulation()">Start</button>
+        <button onclick="stopSimulation()">Stop</button>
+        <button onclick="resetSimulation()">Reset</button>
+        <button onclick="toggleDoor()">Toggle Door</button>
+        <div class="slider-container">
+            <label for="temp1">Cold Temp:</label>
+            <input type="range" id="temp1" min="1" max="10" step="0.1" value="5" oninput="updateTemperature(1, this.value)">
+        </div>
+        <div class="slider-container">
+            <label for="temp2">Hot Temp:</label>
+            <input type="range" id="temp2" min="1" max="10" step="0.1" value="6" oninput="updateTemperature(2, this.value)">
+        </div>
+        <div class="subscript">Note: Cold temperature cannot exceed hot temperature.</div>
+    </div>
+    <div id="victoryMessage">You have violated the second law of thermodynamics... you demon.</div>
+    <script src="{{ url_for('static', filename='js/maxwell_demon.js') }}"></script>
+</body>
+</html>
