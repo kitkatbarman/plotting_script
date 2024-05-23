@@ -245,7 +245,11 @@ function startGame() {
     gameRunning = true;
     document.getElementById('score').textContent = `Score: ${score}`;
     document.getElementById('time').textContent = `Time: ${timer.toFixed(2)}`;
-    
+
+    // Clear all circles
+    circles = [];
+    popups = [];
+
     if (intervalId) clearInterval(intervalId);
     if (circleIntervalId) clearInterval(circleIntervalId);
 
@@ -264,6 +268,7 @@ function startGame() {
     circleIntervalId = setInterval(addCircle, spawnInterval);
     updateAndDraw();
 }
+
 
 function retryGame() {
     document.getElementById('game-over').style.display = 'none';
