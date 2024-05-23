@@ -1,10 +1,10 @@
 let selectedButton = null;
 let selectedDifficulty = null;
 
-const EASY = { MIN_CIRCLE_SIZE: 150, MAX_CIRCLE_SIZE: 200, spawnInterval: 1000, growTime: 3000, fadeTime: 3000, scoreScaler: 0.25 };
-const MEDIUM = { MIN_CIRCLE_SIZE: 100, MAX_CIRCLE_SIZE: 150, spawnInterval: 750, growTime: 2000, fadeTime: 2000, scoreScaler: 1 };
-const HARD = { MIN_CIRCLE_SIZE: 50, MAX_CIRCLE_SIZE: 100, spawnInterval: 500, growTime: 1500, fadeTime: 1500, scoreScaler: 1.75 };
-const INSANE = { MIN_CIRCLE_SIZE: 10, MAX_CIRCLE_SIZE: 40, spawnInterval: 250, growTime: 1000, fadeTime: 1000, scoreScaler: 3 };
+const EASY = { MIN_CIRCLE_SIZE: 100, MAX_CIRCLE_SIZE: 150, spawnInterval: 1000, growTime: 2000, fadeTime: 3000, scoreScaler: 0.25 };
+const MEDIUM = { MIN_CIRCLE_SIZE: 70, MAX_CIRCLE_SIZE: 120, spawnInterval: 700, growTime: 1500, fadeTime: 1200, scoreScaler: 1 };
+const HARD = { MIN_CIRCLE_SIZE: 30, MAX_CIRCLE_SIZE: 80, spawnInterval: 500, growTime: 1200, fadeTime: 1000, scoreScaler: 1.75 };
+const INSANE = { MIN_CIRCLE_SIZE: 10, MAX_CIRCLE_SIZE: 40, spawnInterval: 250, growTime: 1000 fadeTime: 800, scoreScaler: 3 };
 
 let difficulty = EASY;
 let spawnInterval = difficulty.spawnInterval;
