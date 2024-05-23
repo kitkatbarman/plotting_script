@@ -13,8 +13,8 @@ from .routes.diffusion_simulation import diffusion_simulation
 from .routes.circles import circles  # Import the circles blueprint
 from .routes.maxwell_demon import maxwell_demon  # Import the Maxwell's Demon blueprint
 
-# DB_PATH = '/home/ubuntu/plotting_script/game_scores.db'
-DB_PATH = 'game_scores.db'
+DB_PATH = '/home/ubuntu/plotting_script/game_scores.db'
+# DB_PATH = 'game_scores.db'
 
 def init_db():
     with sqlite3.connect(DB_PATH) as conn:
